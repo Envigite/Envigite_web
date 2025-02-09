@@ -42,6 +42,7 @@ export default function HoverImageLinks () {
 };
 
 const Link = ({ heading, imgSrc, subheading, href }) => {
+  
   const ref = useRef(null);
 
   const x = useMotionValue(0);

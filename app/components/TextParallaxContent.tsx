@@ -1,6 +1,5 @@
 import React, { useRef, ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { FiArrowUpRight } from "react-icons/fi";
 import About from "./About";
 import Skills from "./Skills";
 import Portfolio from "./Portfolio";

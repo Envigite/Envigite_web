@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: "export",
   trailingSlash: true,
   images: {
-    domains: ['media.giphy.com'], // Aquí agregas el dominio permitido
+    unoptimized: true, // <--- Desactiva la optimización de imágenes
   },
 };
 

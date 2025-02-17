@@ -94,8 +94,7 @@ const DirectoryStructure: React.FC = () => {
           children: [
             {
               name: "MinecraftRepository",
-              image:
-                "https://media.giphy.com/media/SVxyxR5k0d2ejnUHea/giphy.gif",
+              image: "/images/project1.webp",
               link: "https://github.com/Envigite/MinecraftRepository",
               children: [
                 {
@@ -110,8 +109,7 @@ const DirectoryStructure: React.FC = () => {
             },
             {
               name: "HoroscopApp",
-              image:
-                "https://media.giphy.com/media/MlCESq2aNliyYeRYbO/giphy.gif",
+              image: "/images/project2.webp",
               link: "https://github.com/Envigite/HoroscopApp",
               children: [
                 {
@@ -126,8 +124,7 @@ const DirectoryStructure: React.FC = () => {
             },
             {
               name: "Envigite_web",
-              image:
-                "https://media.giphy.com/media/zP4CyLYkhcc9bF7s4F/giphy.gif",
+              image: "/images/project3.webp",
               link: "https://github.com/Envigite/Envigite_web",
               children: [
                 {

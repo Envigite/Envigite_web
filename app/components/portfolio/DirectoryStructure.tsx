@@ -54,6 +54,8 @@ const DirectoryItem: React.FC<DirectoryItemComponentProps> = ({
             <Image
               src={image}
               alt={name}
+              width={300}
+              height={200}
               className="w-48 h-48 object-cover rounded hover:scale-105 transition-transform duration-200"
             />
           </a>

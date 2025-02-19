@@ -12,4 +12,8 @@ export interface DirectoryItemComponentProps {
   link?: string;
   children?: React.ReactNode;
   description?: string;
+  path?: string | null;
+  onToggle?: (value: string | null) => void;
+  activeItem?: string | null;
+  level?: number;
 }

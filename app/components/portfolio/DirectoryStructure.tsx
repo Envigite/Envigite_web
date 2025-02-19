@@ -9,28 +9,39 @@ const DirectoryItem: React.FC<DirectoryItemComponentProps> = ({
   link,
   image,
   description,
+  path,
+  onToggle,
+  activeItem,
+  level = 0,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isLocalOpen, setIsLocalOpen] = useState(true);
+
+  // Solo aplicamos la lógica del acordeón en el nivel de los proyectos (nivel 2)
+  const isOpen = level === 2 ? activeItem === path : isLocalOpen;
 
   const toggleOpen = () => {
-    setIsOpen(!isOpen);
+    if (level === 2 && onToggle) {
+      onToggle(isOpen ? null : path ?? null);
+    } else {
+      setIsLocalOpen(!isLocalOpen);
+    }
   };
 
   const hasChildren = children && React.Children.count(children) > 0;
 
   return (
-    <div className="ml-4">
+    <div className="ml-1">
       {/* Contenedor de la carpeta o archivo */}
       <div
-        className="flex items-center gap-2 py-2 pr-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200 w-fit"
+        className="flex items-center gap-2 py-2 pr-4 pl-4 cursor-pointer hover:bg-gray-300 rounded-lg transition-colors duration-200 w-fit"
         onClick={toggleOpen}
       >
         {hasChildren || image ? (
           <div className="w-5 h-5 flex items-center justify-center">
             {isOpen ? (
-              <ChevronDown size={16} className="text-purple-600" />
+              <ChevronDown size={24} className="text-purple-600" />
             ) : (
-              <ChevronRight size={16} className="text-purple-600" />
+              <ChevronRight size={24} className="text-purple-600" />
             )}
           </div>
         ) : null}
@@ -39,15 +50,15 @@ const DirectoryItem: React.FC<DirectoryItemComponentProps> = ({
 
       {/* Contenido hijo */}
       <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-hidden transition-all duration-1000 ease-in-out ${
+          isOpen ? "max-h-screen opacity-200" : "max-h-0 opacity-0"
         }`}
       >
         {/* Mostrar la imagen si existe */}
         {image && (
           <a
             href={link}
-            className="block ml-4 mt-2"
+            className="block ml-4 mt-2 w-fit"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -56,7 +67,7 @@ const DirectoryItem: React.FC<DirectoryItemComponentProps> = ({
               alt={name}
               width={300}
               height={200}
-              className="w-48 h-48 object-cover rounded hover:scale-105 transition-transform duration-200"
+              className="w-48 h-81 object-cover rounded hover:scale-110 transition-transform duration-500"
             />
           </a>
         )}
@@ -84,6 +95,7 @@ const DirectoryItem: React.FC<DirectoryItemComponentProps> = ({
 };
 
 const DirectoryStructure: React.FC = () => {
+  const [activeItem, setActiveItem] = useState<string | null>(null);
   // Ejemplo de estructura de datos
   const data: DirectoryItem[] = [
     {
@@ -143,23 +155,33 @@ const DirectoryStructure: React.FC = () => {
     },
   ];
 
-  const renderDirectory = (items: DirectoryItem[]) => {
-    return items.map((item, index) => (
-      <DirectoryItem
-        key={index}
-        name={item.name}
-        link={item.link}
-        image={item.image}
-        description={item.description}
-      >
-        {item.children && renderDirectory(item.children)}
-      </DirectoryItem>
-    ));
+  const renderDirectory = (
+    items: DirectoryItem[],
+    currentPath = "",
+    level = 0
+  ) => {
+    return items.map((item, index) => {
+      const path = `${currentPath}/${index}-${item.name}`;
+      return (
+        <DirectoryItem
+          key={path}
+          name={item.name}
+          link={item.link}
+          image={item.image}
+          description={item.description}
+          path={path}
+          onToggle={setActiveItem}
+          activeItem={activeItem}
+          level={level}
+        >
+          {item.children && renderDirectory(item.children, path, level + 1)}
+        </DirectoryItem>
+      );
+    });
   };
 
   return (
     <div className="relative w-full">
-      {/* Contenedor con media query personalizada */}
       <style jsx global>{`
         @media (max-width: 700px) {
           .directory-container {

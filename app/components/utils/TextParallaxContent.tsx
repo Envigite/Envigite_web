@@ -17,15 +17,6 @@ interface TextParallaxContentProps {
 export default function TextParallaxContentExample() {
   return (
     <div className="bg-white pt-12">
-      <div id="about">
-        <TextParallaxContent
-          imgUrl="/images/about.webp"
-          subheading="¿Quieres saber más sobre mí?"
-          heading="Te cuento más..."
-        >
-          <About />
-        </TextParallaxContent>
-      </div>
       <div id="skills">
         <TextParallaxContent
           imgUrl="/images/skills.webp"
@@ -51,6 +42,15 @@ export default function TextParallaxContentExample() {
           heading="Listo para nuevos retos."
         >
           <Experience />
+        </TextParallaxContent>
+      </div>
+      <div id="about">
+        <TextParallaxContent
+          imgUrl="/images/about.webp"
+          subheading="¿Quieres saber más sobre mí?"
+          heading="Te cuento más..."
+        >
+          <About />
         </TextParallaxContent>
       </div>
       <div id="contact">

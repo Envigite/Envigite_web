@@ -7,12 +7,6 @@ export default function HoverImageLinks () {
     <section className="hidden lg:block p-4 md:p-8 rounded-b-3xl" style={{ backgroundColor: "#121111" }}>
       <div className="mx-auto max-w-5xl">
         <Link
-          heading="Acerca de mi..."
-          subheading="Averigua quien soy 👀"
-          imgSrc="/images/bosque.webp"
-          href="#about"
-        />
-        <Link
           heading="Habilidades"
           subheading="Averigua de que soy capaz 💻"
           imgSrc="/images/origami.webp"
@@ -29,6 +23,12 @@ export default function HoverImageLinks () {
           subheading="Desafíos que me han formado 👷‍♂️"
           imgSrc="/images/exp.webp"
           href="#experience"
+        />
+        <Link
+          heading="Acerca de mi..."
+          subheading="Averigua quien soy 👀"
+          imgSrc="/images/bosque.webp"
+          href="#about"
         />
         <Link
           heading="Contáctame"

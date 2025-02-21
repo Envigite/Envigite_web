@@ -77,20 +77,11 @@ const Navbar = () => {
               <ul className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-8 pt-20 lg:pt-0 pl-4 lg:pl-0">
                 <li>
                   <a
-                    href="#about"
-                    className="text-white text-xl hover:text-green-400"
-                    onClick={() => setIsActive(false)}
-                  >
-                    AboutMe
-                  </a>
-                </li>
-                <li>
-                  <a
                     href="#skills"
                     className="text-white text-xl hover:text-green-400"
                     onClick={() => setIsActive(false)}
                   >
-                    Skills
+                    Habilidades
                   </a>
                 </li>
                 <li>
@@ -99,7 +90,7 @@ const Navbar = () => {
                     className="text-white text-xl hover:text-green-400"
                     onClick={() => setIsActive(false)}
                   >
-                    Portfolio
+                    Portafolio
                   </a>
                 </li>
                 <li>
@@ -108,7 +99,16 @@ const Navbar = () => {
                     className="text-white text-xl hover:text-green-400"
                     onClick={() => setIsActive(false)}
                   >
-                    Experience
+                    Experiencia
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#about"
+                    className="text-white text-xl hover:text-green-400"
+                    onClick={() => setIsActive(false)}
+                  >
+                    Sobre mi
                   </a>
                 </li>
                 <li>
@@ -117,7 +117,7 @@ const Navbar = () => {
                     className="text-white text-xl hover:text-green-400"
                     onClick={() => setIsActive(false)}
                   >
-                    Contact
+                    Contacto
                   </a>
                 </li>
               </ul>

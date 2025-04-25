@@ -1,4 +1,3 @@
-'use client'
 import React, { useState } from 'react';
 import { Calendar, ChevronDown, ChevronUp, CheckCircle, Circle, AlertCircle } from 'lucide-react';
 
@@ -206,7 +205,7 @@ const CronogramaVisual: React.FC = () => {
   }
 
   // Función para ajustar el nombre de las actividades según el tamaño de la pantalla
-  const useResponsiveActivityName = (name: string): string => {
+  const getResponsiveActivityName = (name: string): string => {
     // En un componente real usaríamos un hook de detección de media query
     // Aquí simulamos la lógica para que podamos mostrar nombres acortados en móvil
     return name.length > 25 ? name.substring(0, 24) + '...' : name;
@@ -319,7 +318,7 @@ const CronogramaVisual: React.FC = () => {
                           <div className="flex-shrink-0 mt-1">
                             {getStatusIcon(activity.status)}
                           </div>
-                          <span className="ml-1 md:ml-2 text-xs md:text-sm text-gray-700 line-clamp-2">{useResponsiveActivityName(activity.name)}</span>
+                          <span className="ml-1 md:ml-2 text-xs md:text-sm text-gray-700 line-clamp-2">{getResponsiveActivityName(activity.name)}</span>
                         </div>
                         <div className="flex-grow flex items-center relative h-6">
                           <div 

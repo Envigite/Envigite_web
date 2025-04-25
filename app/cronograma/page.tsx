@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Calendar, ChevronDown, ChevronUp, CheckCircle, Circle, AlertCircle } from 'lucide-react';
 
 // Definición de tipos para los datos del proyecto
@@ -105,6 +105,7 @@ const projectData: ProjectData = {
 
 const CronogramaVisual: React.FC = () => {
   const [expandedPhases, setExpandedPhases] = useState<Record<number, boolean>>({});
+  const [expandedActivities, setExpandedActivities] = useState<Record<string, boolean>>({});
 
   // Función para calcular automáticamente el progreso de cada fase basado en el tiempo
   const calculatePhaseProgress = (phase: Phase): number => {
@@ -144,6 +145,13 @@ const CronogramaVisual: React.FC = () => {
     });
   };
 
+  const toggleActivity = (activityId: string): void => {
+    setExpandedActivities({
+      ...expandedActivities,
+      [activityId]: !expandedActivities[activityId]
+    });
+  };
+
   const getStatusColor = (status: Activity['status']): string => {
     switch (status) {
       case 'completed': return 'bg-green-500';
@@ -155,10 +163,10 @@ const CronogramaVisual: React.FC = () => {
 
   const getStatusIcon = (status: Activity['status']): React.ReactElement => {
     switch (status) {
-      case 'completed': return <CheckCircle size={16} className="text-green-500" />;
-      case 'in-progress': return <Circle size={16} className="text-blue-500" />;
-      case 'delayed': return <AlertCircle size={16} className="text-red-500" />;
-      case 'pending': default: return <Circle size={16} className="text-gray-400" />;
+      case 'completed': return <CheckCircle size={14} className="text-green-500" />;
+      case 'in-progress': return <Circle size={14} className="text-blue-500" />;
+      case 'delayed': return <AlertCircle size={14} className="text-red-500" />;
+      case 'pending': default: return <Circle size={14} className="text-gray-400" />;
     }
   };
 
@@ -205,13 +213,6 @@ const CronogramaVisual: React.FC = () => {
     const month = date.getMonth() === 3 ? 'Abr' : 'May';
     timelineDates.push(`${day}-${month}`);
   }
-
-  // Función para ajustar el nombre de las actividades según el tamaño de la pantalla
-  const getResponsiveActivityName = (name: string): string => {
-    // En un componente real usaríamos un hook de detección de media query
-    // Aquí simulamos la lógica para que podamos mostrar nombres acortados en móvil
-    return name.length > 25 ? name.substring(0, 24) + '...' : name;
-  };
   
   // Actualizar manualmente el estado de las primeras actividades para reflejar el avance actual
   const updateActivityStatuses = () => {
@@ -232,38 +233,38 @@ const CronogramaVisual: React.FC = () => {
   const updatedPhases = updateActivityStatuses();
   
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="mx-auto max-w-6xl w-full bg-white rounded-xl shadow-2xl p-4 md:p-6 border border-gray-200">
-        <div className="mb-6 bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 rounded-lg">
-          <h1 className="text-xl md:text-2xl font-bold text-center">{projectData.title}</h1>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-4">
+      <div className="mx-auto max-w-6xl w-full bg-white rounded-xl shadow-2xl p-3 sm:p-6 border border-gray-200">
+        <div className="mb-4 sm:mb-6 bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-3 sm:p-4 rounded-lg">
+          <h1 className="text-lg sm:text-2xl font-bold text-center">{projectData.title}</h1>
           <div className="flex items-center justify-center mt-2">
-            <Calendar size={20} className="text-yellow-300 mr-2" />
-            <span className="font-medium">Fecha límite: {projectData.deadline}</span>
+            <Calendar size={18} className="text-yellow-300 mr-2" />
+            <span className="font-medium text-sm sm:text-base">Fecha límite: {projectData.deadline}</span>
           </div>
         </div>
 
         {/* Progreso general */}
-        <div className="mb-6 bg-gray-50 p-3 md:p-4 rounded-lg border border-gray-200">
-          <h2 className="text-base md:text-lg font-semibold mb-3 text-gray-800 text-center">Progreso General</h2>
-          <div className="w-full bg-gray-200 rounded-full h-4 md:h-5">
+        <div className="mb-4 sm:mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <h2 className="text-sm sm:text-lg font-semibold mb-2 text-gray-800 text-center">Progreso General</h2>
+          <div className="w-full bg-gray-200 rounded-full h-3 sm:h-5">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 md:h-5 rounded-full transition-all duration-1000 ease-out" 
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 sm:h-5 rounded-full transition-all duration-1000 ease-out" 
               style={{ width: `${overallProgress}%` }}
             ></div>
           </div>
           <div className="flex justify-between mt-2">
-            <span className="text-xs md:text-sm font-medium text-gray-700">{overallProgress}%</span>
-            <span className="text-xs md:text-sm font-medium text-gray-700">Fecha: {formattedToday}</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700">{overallProgress}%</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700">Fecha: {formattedToday}</span>
           </div>
         </div>
 
         {/* Timeline visual */}
-        <div className="mb-6 overflow-x-auto bg-gray-50 p-3 md:p-4 rounded-lg border border-gray-200"
+        <div className="mb-4 sm:mb-6 overflow-x-auto bg-gray-50 p-3 rounded-lg border border-gray-200"
              style={{ scrollbarWidth: 'thin' }}>
-          <h2 className="text-base md:text-lg font-semibold mb-3 text-gray-800 text-center">Línea de Tiempo</h2>
+          <h2 className="text-sm sm:text-lg font-semibold mb-2 text-gray-800 text-center">Línea de Tiempo</h2>
           
           {/* Información de días restantes (solo visible en móvil) */}
-          <div className="md:hidden mb-3 bg-blue-50 p-2 rounded border border-blue-200">
+          <div className="sm:hidden mb-3 bg-blue-50 p-2 rounded border border-blue-200">
             <div className="flex justify-between items-center">
               <span className="text-xs font-medium text-blue-800">Inicio: 24-Abr</span>
               <span className="text-xs font-medium text-blue-800">
@@ -275,8 +276,8 @@ const CronogramaVisual: React.FC = () => {
           
           <div className="relative">
             {/* Fechas de la línea de tiempo (ocultas en móvil) */}
-            <div className="flex border-b border-gray-300 pb-2 hidden md:flex">
-              <div className="w-64 flex-shrink-0"></div>
+            <div className="flex border-b border-gray-300 pb-2 hidden sm:flex">
+              <div className="w-48 sm:w-64 flex-shrink-0"></div>
               {timelineDates.map((date, index) => (
                 <div key={index} className="flex-1 text-center text-xs font-medium text-gray-700">{date}</div>
               ))}
@@ -284,22 +285,22 @@ const CronogramaVisual: React.FC = () => {
 
             {/* Fases del proyecto */}
             {updatedPhases.map((phase) => (
-              <div key={phase.id} className="mt-3">
+              <div key={phase.id} className="mt-2">
                 <div 
-                  className="flex items-center cursor-pointer py-3 hover:bg-blue-50 rounded-md px-2 md:px-3 transition-colors duration-150 ease-in-out border-l-4 border-blue-500"
+                  className="flex items-center cursor-pointer py-2 hover:bg-blue-50 rounded-md px-2 transition-colors duration-150 ease-in-out border-l-4 border-blue-500"
                   onClick={() => togglePhase(phase.id)}
                 >
-                  <div className="w-48 md:w-64 flex-shrink-0 flex items-center">
+                  <div className="w-40 sm:w-64 flex-shrink-0 flex items-center">
                     {expandedPhases[phase.id] ? 
-                      <ChevronUp size={18} className="mr-1 md:mr-2 text-blue-600" /> : 
-                      <ChevronDown size={18} className="mr-1 md:mr-2 text-blue-600" />
+                      <ChevronUp size={16} className="mr-1 sm:mr-2 text-blue-600" /> : 
+                      <ChevronDown size={16} className="mr-1 sm:mr-2 text-blue-600" />
                     }
-                    <span className="font-medium text-gray-800 text-sm md:text-base">{phase.name}</span>
+                    <span className="font-medium text-gray-800 text-xs sm:text-base">{phase.name}</span>
                   </div>
-                  <div className="flex-grow flex items-center relative h-6">
+                  <div className="flex-grow flex items-center relative h-5">
                     {/* Barra de la fase */}
                     <div 
-                      className="absolute h-5 bg-blue-200 rounded-full"
+                      className="absolute h-4 bg-blue-200 rounded-full"
                       style={{ 
                         left: `${(calculateDaysFromStart(phase.startDate) / totalDays) * 100}%`,
                         width: `${((calculateDaysFromStart(phase.endDate) - calculateDaysFromStart(phase.startDate) + 1) / totalDays) * 100}%`
@@ -314,52 +315,80 @@ const CronogramaVisual: React.FC = () => {
                 {/* Actividades de la fase */}
                 {expandedPhases[phase.id] && (
                   <div className="bg-gray-100 rounded-md mb-2 overflow-hidden">
-                    {phase.activities.map((activity) => (
-                      <div key={activity.id} className="flex py-2 pl-6 md:pl-10 hover:bg-blue-50 border-b border-gray-200 last:border-b-0">
-                        <div className="w-48 md:w-64 flex-shrink-0 flex">
-                          <div className="flex-shrink-0 mt-1">
-                            {getStatusIcon(activity.status)}
-                          </div>
-                          <span className="ml-1 md:ml-2 text-xs md:text-sm text-gray-700 line-clamp-2">{getResponsiveActivityName(activity.name)}</span>
-                        </div>
-                        <div className="flex-grow flex items-center relative h-6">
+                    {phase.activities.map((activity) => {
+                      const activityId = `${phase.id}-${activity.id}`;
+                      return (
+                        <div key={activityId} className="border-b border-gray-200 last:border-b-0">
                           <div 
-                            className={`absolute h-3 ${getStatusColor(activity.status)} rounded-full shadow-sm`}
-                            style={{ 
-                              left: `${(calculateDaysFromStart(activity.startDate) / totalDays) * 100}%`,
-                              width: `${((calculateDaysFromStart(activity.endDate) - calculateDaysFromStart(activity.startDate) + 1) / totalDays) * 100}%`
-                            }}
-                          ></div>
+                            className="flex py-1.5 pl-6 sm:pl-10 hover:bg-blue-50 cursor-pointer"
+                            onClick={() => toggleActivity(activityId)}
+                          >
+                            <div className="w-40 sm:w-64 flex-shrink-0 flex items-center">
+                              <div className="flex-shrink-0 mt-0.5">
+                                {getStatusIcon(activity.status)}
+                              </div>
+                              <div className="ml-1 sm:ml-2 flex items-center">
+                                {/* Nombre de actividad truncado con indicador de expansión */}
+                                <div className="flex items-center">
+                                  <span className="text-xs text-gray-700 truncate max-w-32 sm:max-w-56">
+                                    {activity.name}
+                                  </span>
+                                  {expandedActivities[activityId] ? 
+                                    <ChevronUp size={12} className="ml-1 text-blue-600" /> : 
+                                    <ChevronDown size={12} className="ml-1 text-blue-600" />
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex-grow flex items-center relative h-4">
+                              <div 
+                                className={`absolute h-2.5 ${getStatusColor(activity.status)} rounded-full shadow-sm`}
+                                style={{ 
+                                  left: `${(calculateDaysFromStart(activity.startDate) / totalDays) * 100}%`,
+                                  width: `${((calculateDaysFromStart(activity.endDate) - calculateDaysFromStart(activity.startDate) + 1) / totalDays) * 100}%`
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          {/* Contenido expandible para mostrar el nombre completo */}
+                          {expandedActivities[activityId] && (
+                            <div className="py-1 pl-10 sm:pl-16 pr-4 bg-blue-50 text-xs text-gray-800">
+                              <p><strong>Actividad:</strong> {activity.name}</p>
+                              <div className="flex mt-1 justify-between">
+                                <p><strong>Inicio:</strong> {activity.startDate}</p>
+                                <p><strong>Fin:</strong> {activity.endDate}</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
             ))}
-
-            {/* He eliminado la línea roja vertical que representaba la fecha actual */}
           </div>
         </div>
 
         {/* Sección inferior */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
           {/* Información adicional */}
-          <div className="bg-gray-50 p-3 md:p-4 rounded-lg border border-gray-200">
-            <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-3 text-gray-800 text-center">Notas y Consideraciones</h2>
-            <ul className="list-disc pl-4 md:pl-5 space-y-1 md:space-y-2">
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <h2 className="text-sm sm:text-lg font-semibold mb-2 text-gray-800 text-center">Notas y Consideraciones</h2>
+            <ul className="list-disc pl-4 space-y-1">
               {projectData.notes.map((note, index) => (
-                <li key={index} className="text-xs md:text-sm text-gray-700">{note}</li>
+                <li key={index} className="text-xs text-gray-700">{note}</li>
               ))}
             </ul>
           </div>
 
           {/* Próximas etapas */}
-          <div className="bg-gray-50 p-3 md:p-4 rounded-lg border border-gray-200">
-            <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-3 text-gray-800 text-center">Próximas Etapas</h2>
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 md:p-4 rounded-lg border border-blue-200">
-              <h3 className="text-sm md:text-base font-medium text-blue-800 mb-1 md:mb-2 text-center">Informe de Mejoras Sistémicas (16 de Junio)</h3>
-              <p className="text-xs md:text-sm text-gray-700">
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <h2 className="text-sm sm:text-lg font-semibold mb-2 text-gray-800 text-center">Próximas Etapas</h2>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-200">
+              <h3 className="text-xs sm:text-base font-medium text-blue-800 mb-1 text-center">Informe de Mejoras Sistémicas (16 de Junio)</h3>
+              <p className="text-xs text-gray-700">
                 Se elaborará un informe enfocado en propuestas de mejoras sistémicas para las distintas áreas del proceso, 
                 con el objetivo de optimizar la operación de cara a la temporada 2025-2026. 
                 El cronograma detallado para su desarrollo se definirá una vez finalizado el informe de cierre de temporada.

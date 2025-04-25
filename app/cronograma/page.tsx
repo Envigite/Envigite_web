@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Calendar, ChevronDown, ChevronUp, CheckCircle, Circle, AlertCircle } from 'lucide-react';
 
 // Definición de tipos para los datos del proyecto

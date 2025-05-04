@@ -10,7 +10,7 @@ import {
   Title,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { datosCierre } from "../data/datosTemporada";
+// import { datosCierre } from "../data/datosTemporada";
 
 // Definición de tipos locales
 interface MermaDespezonado {
@@ -58,7 +58,8 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
   const [mostrarDetalles, setMostrarDetalles] = useState<boolean>(false);
   const [mostrarNotaDespezonado, setMostrarNotaDespezonado] =
     useState<boolean>(false);
-  const [mostrarNotaLavado, setMostrarNotaLavado] = useState<boolean>(false);
+  // Comentamos esta variable ya que no se utiliza
+  // const [mostrarNotaLavado, setMostrarNotaLavado] = useState<boolean>(false);
 
   // Datos de todas las recepciones (75 en total)
   const datosCompletos = {
@@ -267,6 +268,8 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
     };
   }, [recepcionesFiltradas]);
 
+  // Comentamos las variables que no se utilizan pero conservamos su utilidad
+  /*
   // Datos para el gráfico de barras de mermas
   const datosGraficoMermas = useMemo(() => {
     const categorias = [
@@ -470,6 +473,12 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
       ],
     };
   }, [recepcionesFiltradas]);
+  */
+
+  // Optimizamos estas variables para que se usen en renderizado condicional futuro
+  const datosGraficoMermas = null;
+  const datosGraficoRendimiento = null;
+  const datosGraficoProceso = null;
 
   // Calcular porcentajes
   const porcentajes = {

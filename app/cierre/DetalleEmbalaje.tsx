@@ -12,7 +12,7 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { RectangleEllipsis } from "lucide-react";
+import { Box, Package, Scale } from "lucide-react";
 
 // Definición local del tipo
 interface DatosEmbalaje {
@@ -50,9 +50,9 @@ const DetalleEmbalaje = ({ datosEmbalaje }: DetalleEmbalajeProps) => {
   const [animatedPesoTotes, setAnimatedPesoTotes] = useState(0);
   const [animatedPesoCajas, setAnimatedPesoCajas] = useState(0);
   const [activeTab, setActiveTab] = useState("general");
-  const [showTotesData, setShowTotesData] = useState(true);
-  const [showCajasData, setShowCajasData] = useState(true);
-  const [showIQFData, setShowIQFData] = useState(true);
+  const [showTotesData] = useState(true);
+  const [showCajasData] = useState(true);
+  const [showIQFData] = useState(true);
 
   // Definir constantes para los cálculos correctos
   const PESO_TOTAL_REAL = 386050.22; // Suma total correcta

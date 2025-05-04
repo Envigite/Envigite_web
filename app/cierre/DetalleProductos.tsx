@@ -1,14 +1,15 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { DatosProductos } from "../types";
-import { motion } from "framer-motion";
 import {
-  Box,
-  CircleDollarSign,
+  Banana,
+  /* CircleDollarSign, */ Grape,
+  /* TrendingUp */ Box,
   Package,
   Scale,
-  TrendingUp,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { DatosProductos } from "../types";
 
 // Registrar los componentes necesarios de Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);

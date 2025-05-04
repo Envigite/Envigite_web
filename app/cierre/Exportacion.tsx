@@ -176,7 +176,7 @@ const Exportacion = () => {
     });
 
     // Preparar datasets
-    const datasets = productos.map((producto, index) => {
+    const datasets = productos.map((producto) => {
       let color;
       let borderColor;
       if (producto === "Frutilla") {
@@ -409,9 +409,9 @@ const Exportacion = () => {
                 Productos Exportados
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {resumenTotal.productos.map((producto, index) => (
+                {resumenTotal.productos.map((producto: string) => (
                   <div
-                    key={index}
+                    key={producto}
                     className="flex items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg"
                   >
                     <div className="p-2 mr-3 rounded-full bg-indigo-100">
@@ -445,7 +445,7 @@ const Exportacion = () => {
                 </h3>
                 <div className="space-y-3">
                   {Object.entries(exportacionActual.distribuciones).map(
-                    ([categoria, cantidad], index) => (
+                    ([categoria, cantidad]) => (
                       <div
                         key={categoria}
                         className="flex justify-between items-center"
@@ -479,7 +479,7 @@ const Exportacion = () => {
                 </h3>
                 <div className="space-y-4">
                   {Object.entries(exportacionActual.productos).map(
-                    ([producto, tipos], index) => {
+                    ([producto, tipos]) => {
                       let bgColor = "";
 
                       if (producto === "Frutilla") {

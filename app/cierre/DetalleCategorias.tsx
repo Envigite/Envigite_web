@@ -29,11 +29,11 @@ interface DetalleCategoriaProps {
 
 const DetalleCategorias = ({ datosCategorias }: DetalleCategoriaProps) => {
   // Estados para controlar la visibilidad de las categorías
-  const [showGranel, setShowGranel] = useState(true);
-  const [showBolsas6x5, setShowBolsas6x5] = useState(true);
-  const [showBolsas13x2, setShowBolsas13x2] = useState(true);
-  const [showBolsas14x2, setShowBolsas14x2] = useState(true);
-  const [showBolsas10x1, setShowBolsas10x1] = useState(true);
+  const [showGranel] = useState(true);
+  const [showBolsas6x5] = useState(true);
+  const [showBolsas13x2] = useState(true);
+  const [showBolsas14x2] = useState(true);
+  const [showBolsas10x1] = useState(true);
 
   // Formateador para números
   const formatearNumero = (numero: number) => {
@@ -63,14 +63,6 @@ const DetalleCategorias = ({ datosCategorias }: DetalleCategoriaProps) => {
     bolsas14x2: 4581.9,
     bolsas10x1: 930,
   };
-
-  // Total de peso
-  const totalPeso =
-    pesoPorCategoria.granel +
-    pesoPorCategoria.bolsas6x5 +
-    pesoPorCategoria.bolsas13x2 +
-    pesoPorCategoria.bolsas14x2 +
-    pesoPorCategoria.bolsas10x1;
 
   // Datos para el gráfico de barras de categorías - exactamente como DetalleEmbalaje
   const datosGraficoBarras = {

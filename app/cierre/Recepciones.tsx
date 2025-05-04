@@ -476,9 +476,9 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
   */
 
   // Optimizamos estas variables para que se usen en renderizado condicional futuro
-  const datosGraficoMermas = null;
-  const datosGraficoRendimiento = null;
-  const datosGraficoProceso = null;
+  // const datosGraficoMermas = null;
+  // const datosGraficoRendimiento = null;
+  // const datosGraficoProceso = null;
 
   // Calcular porcentajes
   const porcentajes = {

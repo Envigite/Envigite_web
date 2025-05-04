@@ -12,7 +12,6 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Box, Package, Scale } from "lucide-react";
 
 // Definición local del tipo
 interface DatosEmbalaje {

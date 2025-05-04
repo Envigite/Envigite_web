@@ -32,6 +32,12 @@ export type DatosEmbalaje = {
   pesoTotalTotes: number;
   totalPaletsCajas: number;
   pesoTotalCajas: number;
+  totalesCongelados?: {
+    paletsIQFPendientes: number;
+    pesoIQFPendientes: number;
+  };
+  totalCajas?: number;
+  paletsIQF?: number;
 };
 
 // Tipo para categorías de embalaje

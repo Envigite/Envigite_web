@@ -1,6 +1,14 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie, Doughnut } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import { DatosProductos } from "../types";
+import { motion } from "framer-motion";
+import {
+  Box,
+  CircleDollarSign,
+  Package,
+  Scale,
+  TrendingUp,
+} from "lucide-react";
 
 // Registrar los componentes necesarios de Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -25,7 +33,7 @@ const DetalleProductos = ({
     );
   };
 
-  // Datos para el gráfico de pastel de peso por producto
+  // Datos para el gráfico de dona de peso por producto
   const datosGraficoProductosPeso = {
     labels: ["Frutilla", "Mix Berries", "Pulpa Frutilla"],
     datasets: [
@@ -37,14 +45,14 @@ const DetalleProductos = ({
           datosProductos.pulpaFrutilla.peso,
         ],
         backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
+          "rgba(255, 99, 132, 0.8)", // Rojo
+          "rgba(54, 162, 235, 0.8)", // Azul
+          "rgba(75, 192, 192, 0.8)", // Verde
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
+          "rgba(255, 99, 132, 1)", // Rojo
+          "rgba(54, 162, 235, 1)", // Azul
+          "rgba(75, 192, 192, 1)", // Verde
         ],
         borderWidth: 1,
       },
@@ -63,14 +71,14 @@ const DetalleProductos = ({
           datosProductos.pulpaFrutilla.palets,
         ],
         backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
+          "rgba(255, 99, 132, 0.8)", // Rojo
+          "rgba(54, 162, 235, 0.8)", // Azul
+          "rgba(75, 192, 192, 0.8)", // Verde
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
+          "rgba(255, 99, 132, 1)", // Rojo
+          "rgba(54, 162, 235, 1)", // Azul
+          "rgba(75, 192, 192, 1)", // Verde
         ],
         borderWidth: 1,
       },
@@ -89,202 +97,292 @@ const DetalleProductos = ({
     datosProductos.pulpaFrutilla.peso;
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-6 text-center">
+    <div className="bg-gray-50 p-6 rounded-xl shadow-md">
+      <motion.h2
+        className="text-2xl font-bold mb-6 text-gray-800 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         Detalle de Productos
-      </h2>
+      </motion.h2>
+
+      {/* Tarjetas de resumen */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <motion.div
+          className="bg-gradient-to-r from-purple-50 to-purple-100 p-5 rounded-lg shadow-lg text-purple-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <div className="flex items-center mb-3">
+            <div className="p-2 rounded-full bg-purple-200 mr-3">
+              <Scale className="h-5 w-5 text-purple-600" />
+            </div>
+            <h3 className="text-lg font-bold">Peso Total</h3>
+          </div>
+          <p className="text-3xl font-bold">
+            {formatearNumero(totalPeso)} <span className="text-sm">kg</span>
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gradient-to-r from-blue-50 to-blue-100 p-5 rounded-lg shadow-lg text-blue-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <div className="flex items-center mb-3">
+            <div className="p-2 rounded-full bg-blue-200 mr-3">
+              <Package className="h-5 w-5 text-blue-600" />
+            </div>
+            <h3 className="text-lg font-bold">Total Palets</h3>
+          </div>
+          <p className="text-3xl font-bold">{totalPalets}</p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gradient-to-r from-red-50 to-red-100 p-5 rounded-lg shadow-lg text-red-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <div className="flex items-center mb-3">
+            <div className="p-2 rounded-full bg-red-200 mr-3">
+              <Box className="h-5 w-5 text-red-600" />
+            </div>
+            <h3 className="text-lg font-bold">Producto Principal</h3>
+          </div>
+          <p className="text-xl font-bold">
+            Frutilla{" "}
+            <span className="text-base font-normal">
+              ({formatearNumero(porcentajes.porcentajeFrutilla)}%)
+            </span>
+          </p>
+        </motion.div>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Tabla de productos */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Producto
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Palets
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Peso (kg)
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  % del Total
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-pink-600">
-                    Frutilla
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosProductos.frutilla.palets}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {(
-                      (datosProductos.frutilla.palets / totalPalets) *
-                      100
-                    ).toFixed(1)}
-                    %
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(datosProductos.frutilla.peso)}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(porcentajes.porcentajeFrutilla)}%
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-blue-600">
-                    Mix Berries
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosProductos.mixBerries.palets}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {(
-                      (datosProductos.mixBerries.palets / totalPalets) *
-                      100
-                    ).toFixed(1)}
-                    %
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(datosProductos.mixBerries.peso)}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(porcentajes.porcentajeMixBerries)}%
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-yellow-600">
-                    Pulpa Frutilla
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosProductos.pulpaFrutilla.palets}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {(
-                      (datosProductos.pulpaFrutilla.palets / totalPalets) *
-                      100
-                    ).toFixed(1)}
-                    %
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(datosProductos.pulpaFrutilla.peso)}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {formatearNumero(porcentajes.porcentajePulpaFrutilla)}%
-                  </div>
-                </td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  TOTAL
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  {totalPalets}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  {formatearNumero(totalPeso)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  100%
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div className="p-4 bg-gray-50">
-            <h3 className="text-md font-medium text-gray-700 mb-2">
-              Información Adicional
+        {/* Panel de productos */}
+        <div className="space-y-6">
+          <motion.div
+            className="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-lg shadow-lg text-red-800"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h3 className="text-xl font-bold mb-4 border-b border-red-200 pb-2">
+              Frutilla
             </h3>
-            <p className="text-sm text-gray-600">
-              El promedio de peso por palet es de{" "}
-              {formatearNumero(totalPeso / totalPalets)} kg.
-            </p>
-            <p className="text-sm text-gray-600 mt-1">
-              El producto predominante es la Frutilla con un{" "}
-              {formatearNumero(porcentajes.porcentajeFrutilla)}% del total.
-            </p>
-          </div>
+            <div className="flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <span>Palets:</span>
+                <span className="text-2xl font-bold">
+                  {datosProductos.frutilla.palets}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Peso Total:</span>
+                <span className="text-2xl font-bold">
+                  {formatearNumero(datosProductos.frutilla.peso)}{" "}
+                  <span className="text-sm font-normal">kg</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Porcentaje:</span>
+                <span className="font-semibold">
+                  {formatearNumero(porcentajes.porcentajeFrutilla)}%
+                </span>
+              </div>
+              <div className="w-full bg-red-200 rounded-full h-2 mt-1">
+                <div
+                  className="bg-red-500 h-2 rounded-full"
+                  style={{ width: `${porcentajes.porcentajeFrutilla}%` }}
+                ></div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg shadow-lg text-blue-800"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h3 className="text-xl font-bold mb-4 border-b border-blue-200 pb-2">
+              Mix Berries
+            </h3>
+            <div className="flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <span>Palets:</span>
+                <span className="text-2xl font-bold">
+                  {datosProductos.mixBerries.palets}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Peso Total:</span>
+                <span className="text-2xl font-bold">
+                  {formatearNumero(datosProductos.mixBerries.peso)}{" "}
+                  <span className="text-sm font-normal">kg</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Porcentaje:</span>
+                <span className="font-semibold">
+                  {formatearNumero(porcentajes.porcentajeMixBerries)}%
+                </span>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-2 mt-1">
+                <div
+                  className="bg-blue-500 h-2 rounded-full"
+                  style={{ width: `${porcentajes.porcentajeMixBerries}%` }}
+                ></div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-lg shadow-lg text-teal-800"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h3 className="text-xl font-bold mb-4 border-b border-teal-200 pb-2">
+              Pulpa Frutilla
+            </h3>
+            <div className="flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <span>Palets:</span>
+                <span className="text-2xl font-bold">
+                  {datosProductos.pulpaFrutilla.palets}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Peso Total:</span>
+                <span className="text-2xl font-bold">
+                  {formatearNumero(datosProductos.pulpaFrutilla.peso)}{" "}
+                  <span className="text-sm font-normal">kg</span>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Porcentaje:</span>
+                <span className="font-semibold">
+                  {formatearNumero(porcentajes.porcentajePulpaFrutilla)}%
+                </span>
+              </div>
+              <div className="w-full bg-teal-200 rounded-full h-2 mt-1">
+                <div
+                  className="bg-teal-500 h-2 rounded-full"
+                  style={{ width: `${porcentajes.porcentajePulpaFrutilla}%` }}
+                ></div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Gráficos */}
         <div className="space-y-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4 text-center">
+          <motion.div
+            className="bg-white p-6 rounded-lg shadow-lg"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h3 className="text-xl font-bold mb-4 text-center text-gray-800 border-b border-gray-200 pb-2">
               Distribución por Peso
             </h3>
-            <div className="h-64">
-              <Pie
+            <div className="h-[250px] flex items-center justify-center">
+              <Doughnut
                 data={datosGraficoProductosPeso}
                 options={{
-                  maintainAspectRatio: false,
+                  responsive: true,
+                  cutout: "65%",
                   plugins: {
                     legend: {
-                      position: "bottom",
+                      position: "top",
+                      labels: {
+                        boxWidth: 35,
+                        padding: 20,
+                        font: {
+                          weight: "bold",
+                          size: 12,
+                        },
+                      },
                     },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          const label = context.label || "";
+                          const value = context.raw as number;
+                          const percentage = (
+                            (value / totalPeso) *
+                            100
+                          ).toFixed(1);
+                          return `${label}: ${formatearNumero(
+                            value
+                          )} kg (${percentage}%)`;
+                        },
+                      },
+                    },
+                  },
+                  animation: {
+                    animateRotate: true,
+                    animateScale: true,
                   },
                 }}
               />
             </div>
-          </div>
+          </motion.div>
 
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4 text-center">
+          <motion.div
+            className="bg-white p-6 rounded-lg shadow-lg"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h3 className="text-xl font-bold mb-4 text-center text-gray-800 border-b border-gray-200 pb-2">
               Distribución por Palets
             </h3>
-            <div className="h-64">
+            <div className="h-[250px] flex items-center justify-center">
               <Doughnut
                 data={datosGraficoProductosPalets}
                 options={{
-                  maintainAspectRatio: false,
+                  responsive: true,
+                  cutout: "65%",
                   plugins: {
                     legend: {
-                      position: "bottom",
+                      position: "top",
+                      labels: {
+                        boxWidth: 35,
+                        padding: 20,
+                        font: {
+                          weight: "bold",
+                          size: 12,
+                        },
+                      },
                     },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          const label = context.label || "";
+                          const value = context.raw as number;
+                          const percentage = (
+                            (value / totalPalets) *
+                            100
+                          ).toFixed(1);
+                          return `${label}: ${value} palets (${percentage}%)`;
+                        },
+                      },
+                    },
+                  },
+                  animation: {
+                    animateRotate: true,
+                    animateScale: true,
                   },
                 }}
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

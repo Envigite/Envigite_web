@@ -9,6 +9,7 @@ import DetalleEmbalaje from "./DetalleEmbalaje";
 import DetalleProductos from "./DetalleProductos";
 import DetalleCategorias from "./DetalleCategorias";
 import Recepciones from "./Recepciones";
+import Exportacion from "./Exportacion";
 
 const Dashboard = () => {
   const [seccionActiva, setSeccionActiva] = useState<string>("resumen");
@@ -24,9 +25,7 @@ const Dashboard = () => {
           <h1 className="text-4xl font-bold text-center mb-2">
             Cierre de Temporada 2024-2025
           </h1>
-          <p className="text-xl text-center text-blue-100">
-            Ultra Berries
-          </p>
+          <p className="text-xl text-center text-blue-100">Ultra Berries</p>
         </div>
       </div>
 
@@ -83,6 +82,16 @@ const Dashboard = () => {
           >
             Detalle Categorías
           </button>
+          <button
+            onClick={() => setSeccionActiva("exportacion")}
+            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
+              seccionActiva === "exportacion"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+            }`}
+          >
+            Exportación
+          </button>
         </div>
 
         {/* Contenido según sección activa */}
@@ -109,9 +118,11 @@ const Dashboard = () => {
           {seccionActiva === "categorias" && (
             <DetalleCategorias datosCategorias={datosCierre.categorias} />
           )}
+
+          {seccionActiva === "exportacion" && <Exportacion />}
         </div>
       </div>
-      
+
       {/* Footer con el mismo estilo que el header */}
       <div className="bg-gradient-to-r from-blue-800 via-blue-600 to-sky-400 text-white py-4 mt-8">
         <div className="container mx-auto text-center text-sm">

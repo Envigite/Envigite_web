@@ -132,17 +132,23 @@ export const datosCierre = {
     "Agricola Frut JH SPA": { recepciones: 52 }
   },
   embalaje: {
-    totalTotes: 712,
-    pesoTotalTotes: 146611.40,
-    totalPaletsCajas: 1074,
-    pesoTotalCajas: 225936.71
+    totalTotes: 311,
+    pesoTotalTotes: 146611.4,
+    totalPaletsCajas: 414,
+    pesoTotalCajas: 222286.28,
+    totalesCongelados: {
+      paletsIQFPendientes: 69,
+      pesoIQFPendientes: 17195.98
+    },
+    totalCajas: 16415,
+    paletsIQF: 1074
   },
   categorias: {
-    granel: 434,
+    granel: 358,
     bolsas6x5: 16,
     bolsas13x2: 29,
-    bolsas14x2: 8,
-    bolsas10x1: 1
+    bolsas14x2: 9,
+    bolsas10x1: 2
   },
   productos: {
     mixBerries: {
@@ -150,12 +156,12 @@ export const datosCierre = {
       peso: 684.4
     },
     frutilla: {
-      palets: 478,
-      peso: 220952.86
+      palets: 403,
+      peso: 217019.98
     },
     pulpaFrutilla: {
-      palets: 8,
-      peso: 3969
+      palets: 9,
+      peso: 4581.9
     }
   }
 };

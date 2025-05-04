@@ -9,6 +9,9 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { DatosCategorias } from "../types";
+import { motion } from "framer-motion";
+import { Box, Package, Scale } from "lucide-react";
+import { useState } from "react";
 
 // Registrar los componentes necesarios de Chart.js
 ChartJS.register(
@@ -25,6 +28,13 @@ interface DetalleCategoriaProps {
 }
 
 const DetalleCategorias = ({ datosCategorias }: DetalleCategoriaProps) => {
+  // Estados para controlar la visibilidad de las categorías
+  const [showGranel, setShowGranel] = useState(true);
+  const [showBolsas6x5, setShowBolsas6x5] = useState(true);
+  const [showBolsas13x2, setShowBolsas13x2] = useState(true);
+  const [showBolsas14x2, setShowBolsas14x2] = useState(true);
+  const [showBolsas10x1, setShowBolsas10x1] = useState(true);
+
   // Formateador para números
   const formatearNumero = (numero: number) => {
     return new Intl.NumberFormat("es-CL").format(
@@ -45,293 +55,374 @@ const DetalleCategorias = ({ datosCategorias }: DetalleCategoriaProps) => {
     return ((valor / totalPalets) * 100).toFixed(1);
   };
 
-  // Datos para el gráfico de barras de categorías
-  const datosGraficoCategorias = {
-    labels: ["Granel", "6 x 5Lb", "13 x 2Lb", "14 x 2Lb", "10 x 1Kg"],
-    datasets: [
-      {
-        label: "Palets por Categoría",
-        data: [
-          datosCategorias.granel,
-          datosCategorias.bolsas6x5,
-          datosCategorias.bolsas13x2,
-          datosCategorias.bolsas14x2,
-          datosCategorias.bolsas10x1,
-        ],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(153, 102, 255, 0.6)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Datos estimados de peso por categoría (basados en los pesos por caja proporcionados)
+  // Datos de peso por categoría
   const pesoPorCategoria = {
-    granel: datosCategorias.granel * 48 * 13.62, // 48 cajas por palet a 13.62 kg cada una
-    bolsas6x5: datosCategorias.bolsas6x5 * 48 * 13.61, // 48 cajas por palet a 13.61 kg cada una
-    bolsas13x2: datosCategorias.bolsas13x2 * 48 * 11.8, // 48 cajas por palet a 11.8 kg cada una
-    bolsas14x2: datosCategorias.bolsas14x2 * 48 * 12.6, // 48 cajas por palet a 12.6 kg cada una
-    bolsas10x1: datosCategorias.bolsas10x1 * 48 * 10, // 48 cajas por palet a 10 kg cada una
+    granel: 191592.54,
+    bolsas6x5: 9853.64,
+    bolsas13x2: 15328.2,
+    bolsas14x2: 4581.9,
+    bolsas10x1: 930,
   };
 
-  // Total de peso estimado
-  const totalPesoEstimado =
+  // Total de peso
+  const totalPeso =
     pesoPorCategoria.granel +
     pesoPorCategoria.bolsas6x5 +
     pesoPorCategoria.bolsas13x2 +
     pesoPorCategoria.bolsas14x2 +
     pesoPorCategoria.bolsas10x1;
 
-  return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-6 text-center">
-        Detalle por Categorías de Embalaje
-      </h2>
+  // Datos para el gráfico de barras de categorías - exactamente como DetalleEmbalaje
+  const datosGraficoBarras = {
+    labels: ["Categorías de Embalaje"],
+    datasets: [
+      {
+        label: "Granel",
+        data: [datosCategorias.granel],
+        backgroundColor: "rgba(255, 99, 132, 0.6)", // Rojo
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.9,
+        hidden: !showGranel,
+      },
+      {
+        label: "6 x 5Lb",
+        data: [datosCategorias.bolsas6x5],
+        backgroundColor: "rgba(54, 162, 235, 0.6)", // Azul
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.9,
+        hidden: !showBolsas6x5,
+      },
+      {
+        label: "13 x 2Lb",
+        data: [datosCategorias.bolsas13x2],
+        backgroundColor: "rgba(255, 206, 86, 0.6)", // Amarillo
+        borderColor: "rgba(255, 206, 86, 1)",
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.9,
+        hidden: !showBolsas13x2,
+      },
+      {
+        label: "14 x 2Lb",
+        data: [datosCategorias.bolsas14x2],
+        backgroundColor: "rgba(75, 192, 192, 0.6)", // Teal
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.9,
+        hidden: !showBolsas14x2,
+      },
+      {
+        label: "10 x 1Kg",
+        data: [datosCategorias.bolsas10x1],
+        backgroundColor: "rgba(153, 102, 255, 0.6)", // Morado
+        borderColor: "rgba(153, 102, 255, 1)",
+        borderWidth: 1,
+        barPercentage: 0.7,
+        categoryPercentage: 0.9,
+        hidden: !showBolsas10x1,
+      },
+    ],
+  };
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Tabla de categorías */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Categoría
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Descripción
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Palets
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  % del Total
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-red-600">Granel</div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    Cajas de frutillas sueltas
+  return (
+    <div className="bg-gray-50 p-6 rounded-xl shadow-md">
+      <motion.h2
+        className="text-2xl font-bold mb-5 text-gray-800 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Detalle por Categorías de Embalaje
+      </motion.h2>
+
+      {/* Tarjetas de resumen */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        <motion.div
+          className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg shadow-lg text-purple-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <div className="flex items-center mb-2">
+            <div className="p-2 rounded-full bg-purple-200 mr-3">
+              <Scale className="h-5 w-5 text-purple-600" />
+            </div>
+            <h3 className="text-lg font-bold">Peso Total</h3>
+          </div>
+          <p className="text-3xl font-bold">
+            222.286,28 <span className="text-sm">kg</span>
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg shadow-lg text-blue-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <div className="flex items-center mb-2">
+            <div className="p-2 rounded-full bg-blue-200 mr-3">
+              <Package className="h-5 w-5 text-blue-600" />
+            </div>
+            <h3 className="text-lg font-bold">Total Palets</h3>
+          </div>
+          <p className="text-3xl font-bold">{totalPalets}</p>
+        </motion.div>
+
+        <motion.div
+          className="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-lg shadow-lg text-red-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <div className="flex items-center mb-2">
+            <div className="p-2 rounded-full bg-red-200 mr-3">
+              <Box className="h-5 w-5 text-red-600" />
+            </div>
+            <h3 className="text-lg font-bold">Categoría Principal</h3>
+          </div>
+          <p className="text-xl font-bold">
+            Granel{" "}
+            <span className="text-base font-normal">
+              ({calcularPorcentaje(datosCategorias.granel)}%)
+            </span>
+          </p>
+        </motion.div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-5">
+        {/* Detalles de categorías */}
+        <div className="space-y-3">
+          <motion.div
+            className="bg-white p-5 rounded-lg shadow-lg"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2">
+              Detalles por Categoría
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-gradient-to-r from-red-50 to-red-100 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-red-800">Granel:</span>
+                  <div className="text-right">
+                    <span className="font-bold text-red-900 mr-2">
+                      {datosCategorias.granel} palets
+                    </span>
+                    <span className="text-red-900">
+                      {calcularPorcentaje(datosCategorias.granel)}%
+                    </span>
                   </div>
-                  <div className="text-xs text-gray-500">13.62 kg/caja</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosCategorias.granel}
+                </div>
+                <div className="text-sm text-red-700 mt-1">
+                  {formatearNumero(pesoPorCategoria.granel)} kg
+                </div>
+                <div className="w-full bg-red-200 rounded-full h-2 mt-1">
+                  <div
+                    className="bg-red-500 h-2 rounded-full"
+                    style={{
+                      width: `${calcularPorcentaje(datosCategorias.granel)}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-blue-800">6 x 5Lb:</span>
+                  <div className="text-right">
+                    <span className="font-bold text-blue-900 mr-2">
+                      {datosCategorias.bolsas6x5} palets
+                    </span>
+                    <span className="text-blue-900">
+                      {calcularPorcentaje(datosCategorias.bolsas6x5)}%
+                    </span>
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {calcularPorcentaje(datosCategorias.granel)}%
+                </div>
+                <div className="text-sm text-blue-700 mt-1">
+                  {formatearNumero(pesoPorCategoria.bolsas6x5)} kg
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-2 mt-1">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full"
+                    style={{
+                      width: `${calcularPorcentaje(
+                        datosCategorias.bolsas6x5
+                      )}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-yellow-800">
+                    13 x 2Lb:
+                  </span>
+                  <div className="text-right">
+                    <span className="font-bold text-yellow-900 mr-2">
+                      {datosCategorias.bolsas13x2} palets
+                    </span>
+                    <span className="text-yellow-900">
+                      {calcularPorcentaje(datosCategorias.bolsas13x2)}%
+                    </span>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-blue-600">
-                    6 x 5Lb
+                </div>
+                <div className="text-sm text-yellow-700 mt-1">
+                  {formatearNumero(pesoPorCategoria.bolsas13x2)} kg
+                </div>
+                <div className="w-full bg-yellow-200 rounded-full h-2 mt-1">
+                  <div
+                    className="bg-yellow-500 h-2 rounded-full"
+                    style={{
+                      width: `${calcularPorcentaje(
+                        datosCategorias.bolsas13x2
+                      )}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-teal-800">14 x 2Lb:</span>
+                  <div className="text-right">
+                    <span className="font-bold text-teal-900 mr-2">
+                      {datosCategorias.bolsas14x2} palets
+                    </span>
+                    <span className="text-teal-900">
+                      {calcularPorcentaje(datosCategorias.bolsas14x2)}%
+                    </span>
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    6 bolsas de 5 libras por caja
+                </div>
+                <div className="text-sm text-teal-700 mt-1">
+                  {formatearNumero(pesoPorCategoria.bolsas14x2)} kg
+                </div>
+                <div className="w-full bg-teal-200 rounded-full h-2 mt-1">
+                  <div
+                    className="bg-teal-500 h-2 rounded-full"
+                    style={{
+                      width: `${calcularPorcentaje(
+                        datosCategorias.bolsas14x2
+                      )}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-purple-800">
+                    10 x 1Kg:
+                  </span>
+                  <div className="text-right">
+                    <span className="font-bold text-purple-900 mr-2">
+                      {datosCategorias.bolsas10x1} palets
+                    </span>
+                    <span className="text-purple-900">
+                      {calcularPorcentaje(datosCategorias.bolsas10x1)}%
+                    </span>
                   </div>
-                  <div className="text-xs text-gray-500">13.61 kg/caja</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosCategorias.bolsas6x5}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {calcularPorcentaje(datosCategorias.bolsas6x5)}%
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-yellow-600">
-                    13 x 2Lb
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    13 bolsas de 2 libras por caja
-                  </div>
-                  <div className="text-xs text-gray-500">11.8 kg/caja</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosCategorias.bolsas13x2}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {calcularPorcentaje(datosCategorias.bolsas13x2)}%
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-teal-600">
-                    14 x 2Lb
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    14 bolsas de 2 libras por caja
-                  </div>
-                  <div className="text-xs text-gray-500">12.6 kg/caja</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosCategorias.bolsas14x2}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {calcularPorcentaje(datosCategorias.bolsas14x2)}%
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-purple-600">
-                    10 x 1Kg
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    10 bolsas de 1 kilo por caja
-                  </div>
-                  <div className="text-xs text-gray-500">10 kg/caja</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {datosCategorias.bolsas10x1}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {calcularPorcentaje(datosCategorias.bolsas10x1)}%
-                  </div>
-                </td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  TOTAL
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium"></td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  {totalPalets}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                  100%
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+                <div className="text-sm text-purple-700 mt-1">
+                  {formatearNumero(pesoPorCategoria.bolsas10x1)} kg
+                </div>
+                <div className="w-full bg-purple-200 rounded-full h-2 mt-1">
+                  <div
+                    className="bg-purple-500 h-2 rounded-full"
+                    style={{
+                      width: `${calcularPorcentaje(
+                        datosCategorias.bolsas10x1
+                      )}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Gráficos */}
-        <div className="space-y-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4 text-center">
+        {/* Gráfico de barras */}
+        <div className="flex items-center justify-center">
+          <motion.div
+            className="bg-white p-6 rounded-lg shadow-lg w-full"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h3 className="text-xl font-bold mb-2 text-center text-gray-800">
               Distribución por Categorías
             </h3>
-            <div className="h-80">
+
+            <div className="h-[300px] mb-4">
               <Bar
-                data={datosGraficoCategorias}
+                data={datosGraficoBarras}
                 options={{
                   maintainAspectRatio: false,
                   scales: {
                     y: {
                       beginAtZero: true,
+                      grid: {
+                        display: true,
+                      },
+                      title: {
+                        display: true,
+                        text: "Cantidad de Palets",
+                        font: {
+                          weight: "bold",
+                        },
+                      },
+                      ticks: {
+                        font: {
+                          weight: "bold",
+                        },
+                      },
+                    },
+                    x: {
+                      grid: {
+                        display: false,
+                      },
+                      ticks: {
+                        font: {
+                          weight: "bold",
+                        },
+                        display: false, // Ocultar etiquetas del eje X para parecerse a DetalleEmbalaje
+                      },
                     },
                   },
                   plugins: {
                     legend: {
-                      display: false,
+                      position: "top" as const,
+                      labels: {
+                        boxWidth: 35,
+                        padding: 20,
+                        font: {
+                          weight: "bold",
+                          size: 12,
+                        },
+                      },
                     },
                     title: {
-                      display: true,
-                      text: "Palets por categoría de embalaje",
+                      display: false,
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          return `${context.dataset.label}: ${context.parsed.y} palets`;
+                        },
+                      },
                     },
                   },
                 }}
               />
             </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-2 text-center">
-              Resumen de Categorías
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm font-medium text-gray-700">
-                  Categoría Principal:
-                </p>
-                <p className="text-xl font-bold text-red-600">Granel</p>
-                <p className="text-sm text-gray-500">
-                  {calcularPorcentaje(datosCategorias.granel)}% del total
-                </p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm font-medium text-gray-700">
-                  Peso Estimado Total:
-                </p>
-                <p className="text-xl font-bold text-gray-800">
-                  {formatearNumero(totalPesoEstimado)} kg
-                </p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm font-medium text-gray-700">
-                  Total Cajas:
-                </p>
-                <p className="text-xl font-bold text-gray-800">
-                  {formatearNumero(totalPalets * 48)}
-                </p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm font-medium text-gray-700">
-                  Promedio Peso/Palet:
-                </p>
-                <p className="text-xl font-bold text-gray-800">
-                  {formatearNumero(totalPesoEstimado / totalPalets)} kg
-                </p>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import DetalleProductos from "./DetalleProductos";
 import DetalleCategorias from "./DetalleCategorias";
 import Recepciones from "./Recepciones";
 import Exportacion from "./Exportacion";
+import DesviacionesAcciones from "./DesviacionesAcciones";
 
 const Dashboard = () => {
   const [seccionActiva, setSeccionActiva] = useState<string>("resumen");
@@ -29,99 +30,120 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="container mx-auto p-4 flex-grow">
-        {/* Navegación */}
-        <div className="flex flex-wrap justify-center gap-3 my-6">
-          <button
-            onClick={() => setSeccionActiva("resumen")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "resumen"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Resumen General
-          </button>
-          <button
-            onClick={() => setSeccionActiva("recepciones")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "recepciones"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Recepciones
-          </button>
-          <button
-            onClick={() => setSeccionActiva("embalaje")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "embalaje"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Detalle Embalaje
-          </button>
-          <button
-            onClick={() => setSeccionActiva("productos")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "productos"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Detalle Productos
-          </button>
-          <button
-            onClick={() => setSeccionActiva("categorias")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "categorias"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Detalle Categorías
-          </button>
-          <button
-            onClick={() => setSeccionActiva("exportacion")}
-            className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md ${
-              seccionActiva === "exportacion"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-            }`}
-          >
-            Exportación
-          </button>
-        </div>
-
-        {/* Contenido según sección activa */}
-        <div className="bg-white rounded-xl shadow-xl p-6 border border-blue-100">
-          {seccionActiva === "resumen" && (
-            <ResumenGeneral totales={totales} porcentajes={porcentajes} />
-          )}
-
-          {seccionActiva === "recepciones" && (
-            <Recepciones recepciones={datosCierre.recepciones} />
-          )}
-
-          {seccionActiva === "embalaje" && (
-            <DetalleEmbalaje datosEmbalaje={datosCierre.embalaje} />
-          )}
-
-          {seccionActiva === "productos" && (
-            <DetalleProductos
-              datosProductos={datosCierre.productos}
-              porcentajes={porcentajes}
-            />
-          )}
-
-          {seccionActiva === "categorias" && (
-            <DetalleCategorias datosCategorias={datosCierre.categorias} />
-          )}
-
-          {seccionActiva === "exportacion" && <Exportacion />}
+      {/* Navegación */}
+      <div className="bg-white shadow-md">
+        <div className="container mx-auto px-6">
+          <nav className="flex justify-center space-x-4 overflow-x-auto py-4">
+            <button
+              onClick={() => setSeccionActiva("resumen")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                seccionActiva === "resumen"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Resumen General
+            </button>
+            <button
+              onClick={() => setSeccionActiva("recepciones")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "recepciones"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Recepciones
+            </button>
+            <button
+              onClick={() => setSeccionActiva("embalaje")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "embalaje"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Embalaje
+            </button>
+            <button
+              onClick={() => setSeccionActiva("productos")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "productos"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Productos
+            </button>
+            <button
+              onClick={() => setSeccionActiva("categorias")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "categorias"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Categorías
+            </button>
+            <button
+              onClick={() => setSeccionActiva("exportacion")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "exportacion"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Exportación
+            </button>
+            <button
+              onClick={() => setSeccionActiva("desviaciones")}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                seccionActiva === "desviaciones"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Desviaciones y Acciones
+            </button>
+          </nav>
         </div>
       </div>
+
+      {/* Contenido principal */}
+      <main className="flex-grow container mx-auto px-6 py-8">
+        {seccionActiva === "resumen" && (
+          <ResumenGeneral
+            totales={totales}
+            porcentajes={porcentajes}
+          />
+        )}
+        {seccionActiva === "recepciones" && (
+          <Recepciones
+            recepciones={datosCierre.recepciones}
+          />
+        )}
+        {seccionActiva === "embalaje" && (
+          <DetalleEmbalaje
+            datosEmbalaje={datosCierre.embalaje}
+          />
+        )}
+        {seccionActiva === "productos" && (
+          <DetalleProductos
+            datosProductos={datosCierre.productos}
+            porcentajes={porcentajes}
+          />
+        )}
+        {seccionActiva === "categorias" && (
+          <DetalleCategorias
+            datosCategorias={datosCierre.categorias}
+          />
+        )}
+        {seccionActiva === "exportacion" && (
+          <Exportacion />
+        )}
+        {seccionActiva === "desviaciones" && (
+          <DesviacionesAcciones visible={true} />
+        )}
+      </main>
 
       {/* Footer con el mismo estilo que el header */}
       <div className="bg-gradient-to-r from-blue-800 via-blue-600 to-sky-400 text-white py-4 mt-8">

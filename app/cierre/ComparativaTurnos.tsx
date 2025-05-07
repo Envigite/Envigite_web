@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 

@@ -143,7 +143,7 @@ const DesviacionesAcciones = ({ visible }: DesviacionesAccionesProps) => {
           <h3 className="text-xl font-semibold mb-8 text-center">Desviaciones Detectadas en el Proceso</h3>
           
           <div className="space-y-6 max-w-4xl mx-auto">
-            {desviaciones.map((item, index) => (
+            {desviaciones.map((item) => (
               <div 
                 key={item.id} 
                 className="flex items-center transition-transform duration-300 hover:scale-105 transform-gpu cursor-pointer"

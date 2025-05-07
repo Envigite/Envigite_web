@@ -11,9 +11,9 @@ export const datosCierre = {
     {
       numero: 1,
       productor: "L. Carrasco",
-      kilosRecepcionados: 12138,
+      kilosRecepcionados: 12138.35,
       kilosDespezonados: 0,
-      kilosLavados: 10373,
+      kilosLavados: 10373.85,
       kilosNoLavados: 0,
       mermaDespezonado: {
         hoja: 0,
@@ -30,28 +30,28 @@ export const datosCierre = {
     {
       numero: 2,
       productor: "P. Farías",
-      kilosRecepcionados: 27800,
-      kilosDespezonados: 4539,
-      kilosLavados: 23209,
+      kilosRecepcionados: 27800.40,
+      kilosDespezonados: 4539.4,
+      kilosLavados: 23209.33,
       kilosNoLavados: 0,
       mermaDespezonado: {
-        hoja: 412,
+        hoja: 412.06,
         jugo: 492,
         desecho: 0
       },
       mermaLavado: {
-        jugo: 0,
+        jugo: 351,
         hongo: 0,
-        frutaMalDespezonada: 0,
-        desecho: 3649
+        frutaMalDespezonada: 50,
+        desecho: 3209.25
       }
     },
     {
       numero: 3,
       productor: "F. Carrasco",
-      kilosRecepcionados: 10903,
+      kilosRecepcionados: 10902.7,
       kilosDespezonados: 0,
-      kilosLavados: 4946,
+      kilosLavados: 4945.81,
       kilosNoLavados: 5779.1,
       mermaDespezonado: {
         hoja: 0,
@@ -62,7 +62,7 @@ export const datosCierre = {
         jugo: 0,
         hongo: 0,
         frutaMalDespezonada: 0,
-        desecho: 179
+        desecho: 178.9
       }
     },
     {
@@ -70,7 +70,7 @@ export const datosCierre = {
       productor: "J. Carrasco",
       kilosRecepcionados: 6230,
       kilosDespezonados: 0,
-      kilosLavados: 5360,
+      kilosLavados: 5360.01,
       kilosNoLavados: 0,
       mermaDespezonado: {
         hoja: 0,
@@ -87,9 +87,9 @@ export const datosCierre = {
     {
       numero: 5,
       productor: "C. Giofer Spa",
-      kilosRecepcionados: 49470,
+      kilosRecepcionados: 49469.50,
       kilosDespezonados: 0,
-      kilosLavados: 32333,
+      kilosLavados: 32333.32,
       kilosNoLavados: 15113,
       mermaDespezonado: {
         hoja: 0,
@@ -97,29 +97,31 @@ export const datosCierre = {
         desecho: 0
       },
       mermaLavado: {
-        jugo: 16428,
+        jugo:  1315,
         hongo: 0,
         frutaMalDespezonada: 0,
-        desecho: 442
+        desecho: 441.89
       }
     },
     {
       numero: 6,
       productor: "Agricola Frut JH SPA",
-      kilosRecepcionados: 435736,
-      kilosDespezonados: 326733,
-      kilosLavados: 323160,
+      kilosRecepcionados: 435736.20,
+      kilosDespezonados: 326733.11,
+      calculoParaDespezonado: 406714.9,
+      calculoParaLavado: 300321.37,
+      kilosLavados: 323159.94,
       kilosNoLavados: 1669,
       mermaDespezonado: {
-        hoja: 50587,
-        jugo: 28676,
+        hoja: 50587.34,
+        jugo: 28675.50,
         desecho: 200
       },
       mermaLavado: {
-        jugo: 22296,
-        hongo: 288,
-        frutaMalDespezonada: 1437,
-        desecho: 3465
+        jugo: 20577.4,
+        hongo: 287.55,
+        frutaMalDespezonada: 1436.9,
+        desecho: 3465.05
       }
     }
   ],

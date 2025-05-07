@@ -23,6 +23,66 @@ interface ResumenGeneralProps {
 }
 
 const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
+  // Formateador para números
+  const formatearNumero = (numero: number) => {
+    return new Intl.NumberFormat("es-CL").format(
+      Math.round(numero * 100) / 100
+    );
+  };
+  
+  // Datos de mermas (obtenidos de las recepciones)
+  const mermas = {
+    despezonado: {
+      hoja: 50999,     // Ejemplo basado en los datos de Recepciones.tsx
+      jugo: 29168,     // Estos valores deberían venir del componente Recepciones.tsx
+      desecho: 200,
+    },
+    lavado: {
+      jugo: 38724,
+      hongo: 288,
+      frutaMalDespezonada: 1437,
+      desecho: 10633,
+    }
+  };
+  
+  // Calcular mermas reales (excluyendo jugo y fruta mal despezonada)
+  const mermaRealDespezonado = mermas.despezonado.hoja + mermas.despezonado.desecho;
+  const mermaRealLavado = mermas.lavado.hongo + mermas.lavado.desecho;
+  const totalDesecho = 61680.04; // Valor actualizado según lo solicitado
+  
+  // Calcular productos derivados (jugo, fruta mal despezonada y no lavado)
+  const totalJugoDespezonado = mermas.despezonado.jugo;
+  const totalJugoLavado = mermas.lavado.jugo;
+  const totalFrutaMalDespezonada = mermas.lavado.frutaMalDespezonada;
+  const totalNoLavado = 22561.1; // Valor obtenido del datosCompletos
+  const totalJugo = totalJugoDespezonado + totalJugoLavado + totalFrutaMalDespezonada + totalNoLavado;
+  
+  // Datos de peso total (cajas + totes + IQF pendiente)
+  const pesoTotalTotes = 146611.4;
+  const pesoTotalCajas = 222286.28; // Corregido: valor exacto de cajas
+  const pesoTotalIQF = 17195.98; // IQF pendiente
+  const pesoTotalProducto = pesoTotalTotes + pesoTotalCajas + pesoTotalIQF; // Jugo eliminado del cálculo
+  
+  // Datos de palets
+  const paletsTotes = 311;
+  const paletsCajas = 414;
+  const totalPalets = paletsTotes + paletsCajas;
+
+  // Rendimiento actualizado
+  const rendimientoActualizado = 87.56;
+  
+  // Calcular la merma no medible (pérdida entre rendimiento y desecho)
+  const totalRecepcionado = 542277; // Total recepcionado
+  const totalProductoUtil = totalRecepcionado * (rendimientoActualizado / 100); // Lo que debería salir según rendimiento
+  const totalReal = pesoTotalProducto + totalDesecho; // Lo que realmente tenemos contabilizado
+  const totalMermaNoMedible = totalRecepcionado - totalReal; // Merma que no podemos medir
+
+  // Calcular porcentajes para las barras de progreso
+  const porcentajeDesecho = (totalDesecho / totalRecepcionado) * 100;
+  const porcentajeMermaNoMedible = (totalMermaNoMedible / totalRecepcionado) * 100;
+  const porcentajeJugo = (totalJugo / totalRecepcionado) * 100;
+  const porcentajeProductoFinal = (pesoTotalProducto / totales.totalKilosLavados) * 100;
+
   // Datos para el gráfico de distribución de productos
   const datosGraficoProductos = {
     labels: ["Frutilla", "Mix Berries", "Pulpa Frutilla"],
@@ -59,7 +119,7 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
           totales.totalKilosRecepcionados,
           totales.totalKilosDespezonados,
           totales.totalKilosLavados,
-          totales.totalKilosProductoFinal
+          pesoTotalProducto // Actualizado: ahora incluye totes + cajas + IQF
         ],
         backgroundColor: [
           "rgba(251, 191, 36, 0.7)",  // Amarillo
@@ -79,43 +139,6 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
       }
     ],
   };
-
-  // Formateador para números
-  const formatearNumero = (numero: number) => {
-    return new Intl.NumberFormat("es-CL").format(
-      Math.round(numero * 100) / 100
-    );
-  };
-  
-  // Datos de mermas (obtenidos de las recepciones)
-  const mermas = {
-    despezonado: {
-      hoja: 50999,     // Ejemplo basado en los datos de Recepciones.tsx
-      jugo: 29168,     // Estos valores deberían venir del componente Recepciones.tsx
-      desecho: 200,
-    },
-    lavado: {
-      jugo: 38724,
-      hongo: 288,
-      frutaMalDespezonada: 1437,
-      desecho: 10633,
-    }
-  };
-  
-  // Calcular total de mermas
-  const totalMermaDespezonado = mermas.despezonado.hoja + mermas.despezonado.jugo + mermas.despezonado.desecho;
-  const totalMermaLavado = mermas.lavado.jugo + mermas.lavado.hongo + mermas.lavado.frutaMalDespezonada + mermas.lavado.desecho;
-  const totalMermas = totalMermaDespezonado + totalMermaLavado;
-  
-  // Datos de peso total (cajas + totes)
-  const pesoTotalTotes = 146611.4;
-  const pesoTotalCajas = 225937;
-  const pesoTotalProducto = pesoTotalTotes + pesoTotalCajas;
-  
-  // Datos de palets
-  const paletsTotes = 311;
-  const paletsCajas = 414;
-  const totalPalets = paletsTotes + paletsCajas;
 
   return (
     <motion.div 
@@ -159,11 +182,28 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
         >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-blue-100 uppercase">Rendimiento</p>
-              <h3 className="text-3xl font-bold mt-1">{formatearNumero(porcentajes.porcentajeRendimiento)}%</h3>
+              <p className="text-xs font-medium text-blue-100 uppercase">Rendimiento Despezonado</p>
+              <h3 className="text-3xl font-bold mt-1">{rendimientoActualizado}%</h3>
               <p className="text-sm text-blue-100 mt-1">Eficiencia del proceso</p>
             </div>
             <TrendingUp className="h-10 w-10 text-blue-100 opacity-80" />
+          </div>
+        </motion.div>
+
+        <motion.div 
+          className="bg-gradient-to-br from-purple-500 to-fuchsia-500 p-5 rounded-xl shadow-lg text-white"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+          whileHover={{ y: -5, transition: { duration: 0.2 } }}
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-medium text-purple-100 uppercase">Rendimiento Embasado</p>
+              <h3 className="text-3xl font-bold mt-1">{formatearNumero(pesoTotalProducto/totales.totalKilosLavados*100)}%</h3>
+              <p className="text-sm text-purple-100 mt-1">Eficiencia de embasado</p>
+            </div>
+            <Package className="h-10 w-10 text-purple-100 opacity-80" />
           </div>
         </motion.div>
 
@@ -178,26 +218,9 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
             <div>
               <p className="text-xs font-medium text-emerald-100 uppercase">Producto Final</p>
               <h3 className="text-3xl font-bold mt-1">{formatearNumero(pesoTotalProducto)} kg</h3>
-              <p className="text-sm text-emerald-100 mt-1">Cajas + Totes</p>
+              <p className="text-sm text-emerald-100 mt-1">Cajas + Totes + IQF</p>
             </div>
             <Scale className="h-10 w-10 text-emerald-100 opacity-80" />
-          </div>
-        </motion.div>
-
-        <motion.div 
-          className="bg-gradient-to-br from-purple-500 to-violet-500 p-5 rounded-xl shadow-lg text-white"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-          whileHover={{ y: -5, transition: { duration: 0.2 } }}
-        >
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-medium text-purple-100 uppercase">Palets Producidos</p>
-              <h3 className="text-3xl font-bold mt-1">{totalPalets}</h3>
-              <p className="text-sm text-purple-100 mt-1">{paletsTotes} totes + {paletsCajas} cajas</p>
-            </div>
-            <Package className="h-10 w-10 text-purple-100 opacity-80" />
           </div>
         </motion.div>
         
@@ -205,13 +228,13 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
           className="bg-gradient-to-br from-amber-500 to-orange-500 p-5 rounded-xl shadow-lg text-white"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.5 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
           whileHover={{ y: -5, transition: { duration: 0.2 } }}
         >
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-medium text-amber-100 uppercase">Total Mermas</p>
-              <h3 className="text-3xl font-bold mt-1">{formatearNumero(totalMermas)} kg</h3>
+              <h3 className="text-3xl font-bold mt-1">{formatearNumero(totalDesecho)} kg</h3>
               <p className="text-sm text-amber-100 mt-1">Despezonado y lavado</p>
             </div>
             <AlertTriangle className="h-10 w-10 text-amber-100 opacity-80" />
@@ -302,128 +325,67 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
           </div>
           <div className="mt-2 flex items-center justify-center space-x-2 text-gray-600">
             <ArrowUpCircle className="h-4 w-4 text-teal-500" />
-            <span className="text-sm">Rendimiento {formatearNumero(pesoTotalProducto/542277*100)}% del total recepcionado</span>
+            <span className="text-sm">Rendimiento {formatearNumero(pesoTotalProducto/totales.totalKilosLavados*100)}% del total lavado</span>
           </div>
         </motion.div>
       </div>
 
-      {/* Datos Adicionales */}
+      {/* Producto Final */}
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
-        initial={{ opacity: 0, y: 30 }}
+        className="bg-white p-5 rounded-xl shadow-md border border-green-200 mb-10"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-lg shadow-sm border border-amber-100">
-          <h4 className="font-medium text-amber-800 mb-2 flex items-center">
-            <CalendarDays className="h-4 w-4 mr-1" /> 
-            Embalaje
-          </h4>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Totes:</span>
-            <span className="font-semibold text-amber-700">{paletsTotes} ({formatearNumero(pesoTotalTotes)} kg)</span>
+        <h3 className="text-xl font-bold mb-4 text-center text-green-600">
+          Producto Final
+        </h3>
+        
+        {/* Barra de progreso para producto final */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-sm font-medium text-green-700">Porcentaje del total lavado</span>
+            <span className="text-sm font-medium text-green-700">{formatearNumero(porcentajeProductoFinal)}%</span>
           </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">Cajas:</span>
-            <span className="font-semibold text-amber-700">{paletsCajas} ({formatearNumero(pesoTotalCajas)} kg)</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">IQF:</span>
-            <span className="font-semibold text-amber-700">69 palets</span>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg shadow-sm border border-blue-100">
-          <h4 className="font-medium text-blue-800 mb-2">Principales Productores</h4>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Agricola Frut JH SPA:</span>
-            <span className="font-semibold text-blue-700">52 recepciones</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">P. Farías:</span>
-            <span className="font-semibold text-blue-700">8 recepciones</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">C. Giofer Spa:</span>
-            <span className="font-semibold text-blue-700">7 recepciones</span>
+          <div className="w-full bg-gray-200 rounded-full h-4">
+            <motion.div 
+              className="bg-gradient-to-r from-green-300 to-green-500 h-4 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(porcentajeProductoFinal, 100)}%` }}
+              transition={{ duration: 1, delay: 0.5 }}
+            />
           </div>
         </div>
-
-        <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-4 rounded-lg shadow-sm border border-emerald-100">
-          <h4 className="font-medium text-emerald-800 mb-2">Eficiencia del Proceso</h4>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Rendimiento Desp.:</span>
-            <span className="font-semibold text-emerald-700">{formatearNumero(totales.totalKilosDespezonados/totales.totalKilosRecepcionados*100)}%</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">Rendimiento Lavado:</span>
-            <span className="font-semibold text-emerald-700">{formatearNumero(totales.totalKilosLavados/totales.totalKilosDespezonados*100)}%</span>
-          </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">Rendimiento Final:</span>
-            <span className="font-semibold text-emerald-700">{formatearNumero(pesoTotalProducto/totales.totalKilosRecepcionados*100)}%</span>
-          </div>
-        </div>
-      </motion.div>
-      
-      {/* Desglose de Mermas */}
-      <motion.div
-        className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-lg shadow-sm border border-amber-100"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-      >
-        <h4 className="font-medium text-amber-800 mb-3 flex items-center justify-center text-center text-lg">
-          <AlertTriangle className="h-5 w-5 mr-2" /> 
-          Desglose de Mermas
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h5 className="text-amber-700 font-medium mb-2 text-center border-b border-amber-200 pb-1">Mermas de Despezonado</h5>
-            <div className="flex justify-between text-sm mt-2">
-              <span className="text-gray-600">Hoja:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.despezonado.hoja)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Jugo:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.despezonado.jugo)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Desecho:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.despezonado.desecho)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-2 pt-1 border-t border-amber-200">
-              <span className="text-gray-700 font-medium">Total Despezonado:</span>
-              <span className="font-bold text-amber-800">{formatearNumero(totalMermaDespezonado)} kg</span>
+        
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+            <h5 className="text-green-700 font-medium mb-2 text-center">Totes</h5>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-700">{paletsTotes} palets</p>
+              <p className="text-lg font-semibold text-green-600">{formatearNumero(pesoTotalTotes)} kg</p>
             </div>
           </div>
-          <div>
-            <h5 className="text-amber-700 font-medium mb-2 text-center border-b border-amber-200 pb-1">Mermas de Lavado</h5>
-            <div className="flex justify-between text-sm mt-2">
-              <span className="text-gray-600">Jugo:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.lavado.jugo)} kg</span>
+          
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+            <h5 className="text-blue-700 font-medium mb-2 text-center">Cajas</h5>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-700">{paletsCajas} palets</p>
+              <p className="text-lg font-semibold text-blue-600">{formatearNumero(pesoTotalCajas)} kg</p>
             </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Hongo:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.lavado.hongo)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Fruta mal despezonada:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.lavado.frutaMalDespezonada)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">Desecho:</span>
-              <span className="font-semibold text-amber-700">{formatearNumero(mermas.lavado.desecho)} kg</span>
-            </div>
-            <div className="flex justify-between text-sm mt-2 pt-1 border-t border-amber-200">
-              <span className="text-gray-700 font-medium">Total Lavado:</span>
-              <span className="font-bold text-amber-800">{formatearNumero(totalMermaLavado)} kg</span>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
+            <h5 className="text-purple-700 font-medium mb-2 text-center">IQF Pendiente</h5>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-700">69 palets</p>
+              <p className="text-lg font-semibold text-purple-600">{formatearNumero(pesoTotalIQF)} kg</p>
             </div>
           </div>
         </div>
-        <div className="mt-3 pt-2 border-t border-amber-200 flex justify-between">
-          <span className="text-amber-900 font-bold">TOTAL MERMAS:</span>
-          <span className="font-bold text-amber-900 text-lg">{formatearNumero(totalMermas)} kg ({formatearNumero(totalMermas/totales.totalKilosRecepcionados*100)}%)</span>
+        
+        <div className="text-center p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
+          <p className="text-sm text-green-700 mb-1">Total Producto Final</p>
+          <p className="text-2xl font-bold text-green-800">{formatearNumero(pesoTotalProducto)} kg</p>
         </div>
       </motion.div>
     </motion.div>

@@ -12,6 +12,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import FechasRecepcion from "./FechasRecepcion";
 import ResumenMensual from "./ResumenMensual";
+import { motion } from "framer-motion";
 // import { datosCierre } from "../data/datosTemporada";
 
 // Definición de tipos locales
@@ -35,6 +36,8 @@ interface Recepcion {
   kilosDespezonados: number;
   kilosLavados: number;
   kilosNoLavados?: number;
+  calculoParaDespezonado?: number;
+  calculoParaLavado?: number;
   mermaDespezonado: MermaDespezonado;
   mermaLavado: MermaLavado;
 }
@@ -488,7 +491,7 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
   const porcentajes = {
     mermaDespezonado:
       totales.totalKilosDespezonados > 0
-        ? (totales.totalMermaDespezonado /
+        ? ((totales.mermaDespezonado.hoja + totales.mermaDespezonado.desecho) /
             (productorSeleccionado === "todos"
               ? datosCompletos.kilosRecepcionadosConDespezonado
               : totales.totalKilosRecepcionados)) *
@@ -496,15 +499,19 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
         : 0,
     mermaLavado:
       totales.totalKilosDespezonados > 0
-        ? (totales.totalMermaLavado / totales.totalKilosDespezonados) * 100
+        ? ((totales.mermaLavado.hongo + totales.mermaLavado.desecho) / totales.totalKilosDespezonados) * 100
         : 0,
     rendimientoDespezonado:
       totales.totalKilosDespezonados > 0
-        ? (totales.totalKilosDespezonados /
-            (productorSeleccionado === "todos"
-              ? datosCompletos.kilosRecepcionadosConDespezonado
-              : totales.totalKilosRecepcionados)) *
-          100
+        ? (productorSeleccionado === "Agricola Frut JH SPA" && recepcionesFiltradas.length > 0 && recepcionesFiltradas[0].calculoParaDespezonado
+            ? ((totales.totalKilosDespezonados + totales.totalKilosNoLavados) / recepcionesFiltradas[0].calculoParaDespezonado) * 100
+            : productorSeleccionado === "P. Farías"
+              ? (4539.4 / 5492) * 100
+              : (totales.totalKilosDespezonados /
+                (productorSeleccionado === "todos"
+                  ? datosCompletos.kilosRecepcionadosConDespezonado
+                  : totales.totalKilosRecepcionados)) *
+                100)
         : 0,
     rendimientoLavado: 0, // Se calculará después
     rendimientoTotal:
@@ -512,7 +519,47 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
         ? (totales.totalKilosLavados / totales.totalKilosRecepcionadosNetos) *
           100
         : 0,
+    // Porcentaje total de merma
+    mermaTotal:
+      totales.totalKilosRecepcionados > 0
+        ? ((totales.mermaDespezonado.hoja + totales.mermaDespezonado.desecho + 
+            totales.mermaLavado.hongo + totales.mermaLavado.desecho) / 
+            totales.totalKilosRecepcionados) * 100
+        : 0,
+    // Porcentaje total de jugo
+    jugoTotal:
+      totales.totalKilosRecepcionados > 0
+        ? ((totales.mermaDespezonado.jugo + 
+            totales.mermaLavado.jugo + 
+            totales.mermaLavado.frutaMalDespezonada +
+            totales.totalKilosNoLavados) / 
+            totales.totalKilosRecepcionados) * 100
+        : 0,
+    // Rendimiento final incluyendo jugo
+    rendimientoConJugo:
+      totales.totalKilosRecepcionados > 0
+        ? ((totales.totalKilosLavados + 
+            totales.mermaDespezonado.jugo + 
+            totales.mermaLavado.jugo + 
+            totales.mermaLavado.frutaMalDespezonada +
+            totales.totalKilosNoLavados) / 
+            totales.totalKilosRecepcionados) * 100
+        : 0,
   };
+
+  // Kilos totales de merma
+  const totalKilosMerma = 
+    totales.mermaDespezonado.hoja + 
+    totales.mermaDespezonado.desecho + 
+    totales.mermaLavado.hongo + 
+    totales.mermaLavado.desecho;
+    
+  // Kilos totales de jugo
+  const totalKilosJugo = 
+    totales.mermaDespezonado.jugo + 
+    totales.mermaLavado.jugo + 
+    totales.mermaLavado.frutaMalDespezonada +
+    totales.totalKilosNoLavados;
 
   // Calcular el rendimiento ponderado del lavado
   if (productorSeleccionado === "todos") {
@@ -529,8 +576,36 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
       totalKilosLavadosProcesados > 0
         ? (totalKilosLavadosResultantes / totalKilosLavadosProcesados) * 100
         : 0;
+  } else if (productorSeleccionado === "Agricola Frut JH SPA" && recepcionesFiltradas.length > 0 && recepcionesFiltradas[0].calculoParaLavado) {
+    // Para el productor JH, usamos la fórmula especial
+    porcentajes.rendimientoLavado = 
+      (recepcionesFiltradas[0].calculoParaLavado / totales.totalKilosDespezonados) * 100;
+  } else if (productorSeleccionado === "P. Farías") {
+    // Para P. Farías, usamos la fórmula específica
+    porcentajes.rendimientoLavado = (19094.05 / 22308.4) * 100;
+  } else if (productorSeleccionado === "C. Giofer Spa") {
+    // Para C. Giofer Spa, usar solo la relación entre lavados y recepcionados
+    porcentajes.rendimientoLavado = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
+    // También ajustamos el rendimiento total para este productor específico
+    porcentajes.rendimientoTotal = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
+    // El rendimiento con jugo debe incluir todos los derivados
+    porcentajes.rendimientoConJugo = ((totales.totalKilosLavados + 
+                                      totales.mermaDespezonado.jugo + 
+                                      totales.mermaLavado.jugo + 
+                                      totales.mermaLavado.frutaMalDespezonada +
+                                      totales.totalKilosNoLavados) / 
+                                      totales.totalKilosRecepcionados) * 100;
+  } else if (productorSeleccionado === "F. Carrasco") {
+    // Para F. Carrasco, usar solo la relación entre lavados y recepcionados
+    porcentajes.rendimientoLavado = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
+    // También ajustamos el rendimiento total para este productor específico
+    porcentajes.rendimientoTotal = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
+    // El rendimiento con jugo debe incluir todos los derivados
+    porcentajes.rendimientoConJugo = ((totales.totalKilosLavados + 
+                                      totales.totalKilosNoLavados) / 
+                                      totales.totalKilosRecepcionados) * 100;
   } else {
-    // Para un productor específico, calculamos el rendimiento de lavado directo
+    // Para otros productores, calculamos el rendimiento de lavado directo
     porcentajes.rendimientoLavado =
       totales.totalKilosRecepcionadosNetos > 0
         ? (totales.totalKilosLavados / totales.totalKilosRecepcionadosNetos) *
@@ -540,7 +615,12 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6 text-center">
+      <motion.h2 
+        className="text-2xl font-semibold mb-6 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         Detalle de Recepciones
         <button 
           onClick={() => setMostrarFechas(true)}
@@ -582,7 +662,7 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
             />
           </svg>
         </button>
-      </h2>
+      </motion.h2>
 
       {/* Modal para mostrar fechas */}
       {mostrarFechas && (
@@ -628,11 +708,16 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
 
       {/* Resumen de totales */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-center">
-        <div className="bg-green-50 p-4 rounded-lg shadow">
+        <motion.div 
+          className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg shadow-lg"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h3 className="text-lg font-medium text-green-800 mb-2">
             Kilos Recepcionados
           </h3>
-          <p className="text-3xl font-bold">
+          <p className="text-3xl font-bold text-green-700">
             {formatearNumero(
               productorSeleccionado === "todos"
                 ? datosCompletos.kilosRealesRecepcionados
@@ -709,69 +794,39 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
                 </p>
               </div>
             )}
-
-            {/* Mostrar información de kilos no lavados si existen */}
-            {totales.totalKilosNoLavados > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
-                Incluye {formatearNumero(totales.totalKilosNoLavados)} kg no
-                procesados en lavado
-              </p>
-            )}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-purple-50 p-4 rounded-lg shadow">
+        <motion.div 
+          className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg shadow-lg"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           <h3 className="text-lg font-medium text-purple-800 mb-2">
             Kilos Despezonados
           </h3>
-          <p className="text-3xl font-bold">
+          <p className="text-3xl font-bold text-purple-700">
             {formatearNumero(totales.totalKilosDespezonados)} kg
           </p>
           <div className="text-sm text-gray-600 mt-1">
             <p className="flex items-center justify-center">
               Rendimiento área despezonado:{" "}
               {formatearNumero(porcentajes.rendimientoDespezonado)}%
-              <button
-                onClick={() =>
-                  setMostrarNotaDespezonado(!mostrarNotaDespezonado)
-                }
-                className="ml-1 text-gray-400 hover:text-gray-600"
-                title="Información importante"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-3.5 h-3.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                  />
-                </svg>
-              </button>
             </p>
-
-            {mostrarNotaDespezonado && (
-              <div className="mt-2 text-xs bg-white p-2 rounded border border-gray-200">
-                <p className="mb-1">
-                  <span className="font-medium">Nota:</span> El cálculo
-                  considera solo los 412.207 kg donde se registró el proceso de
-                  despezonado, de un total de 542.277 kg recepcionados.
-                </p>
-              </div>
-            )}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-blue-50 p-4 rounded-lg shadow">
+        <motion.div 
+          className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg shadow-lg" 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <h3 className="text-lg font-medium text-blue-800 mb-2">
             Kilos Lavados
           </h3>
-          <p className="text-3xl font-bold">
+          <p className="text-3xl font-bold text-blue-700">
             {formatearNumero(totales.totalKilosLavados)} kg
           </p>
           <div className="text-sm text-gray-600 mt-1">
@@ -780,11 +835,16 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
               {formatearNumero(porcentajes.rendimientoLavado)}%
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
       <div className="grid md:grid-cols-2 gap-8">
         {/* Gráfico de recepciones */}
-        <div className="bg-white p-4 rounded-lg shadow">
+        <motion.div 
+          className="bg-white p-4 rounded-lg shadow-lg"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <h3 className="text-lg font-medium mb-4 text-center">
             Comparativa por Productor
           </h3>
@@ -824,108 +884,230 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Tabla de detalle de mermas */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <h3 className="text-lg font-medium p-4 bg-gray-50">
-            Detalle de Mermas
+        <motion.div 
+          className="bg-white rounded-lg shadow-lg overflow-hidden"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <h3 className="text-lg font-medium p-4 bg-gradient-to-r from-gray-50 to-gray-100">
+            Detalle de Procesos
           </h3>
-          <div className="p-4">
-            <div className="mb-4">
-              <h4 className="text-md font-medium text-red-800 mb-2">
-                Merma Despezonado:{" "}
-                {formatearNumero(totales.totalMermaDespezonado)} kg (
-                {formatearNumero(porcentajes.mermaDespezonado)}%)
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Sección de Jugo */}
+            <motion.div 
+              className="bg-gradient-to-r from-amber-50 to-amber-100 p-4 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h4 className="text-md font-medium text-amber-800 mb-3 border-b border-amber-200 pb-2">
+                Jugo
               </h4>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-red-50 p-2 rounded">
-                  <p className="text-sm font-medium">Hoja</p>
-                  <p className="text-lg">
-                    {formatearNumero(totales.mermaDespezonado.hoja)} kg
-                  </p>
-                </div>
-                <div className="bg-red-50 p-2 rounded">
-                  <p className="text-sm font-medium">Jugo</p>
-                  <p className="text-lg">
+              <div className="grid grid-cols-2 gap-3">
+                <motion.div 
+                  className="bg-white p-3 rounded-lg shadow"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className="text-sm font-medium text-amber-800">Jugo Despezonado</p>
+                  <p className="text-lg font-bold text-amber-700">
                     {formatearNumero(totales.mermaDespezonado.jugo)} kg
                   </p>
-                </div>
-                <div className="bg-red-50 p-2 rounded">
-                  <p className="text-sm font-medium">Desecho</p>
-                  <p className="text-lg">
-                    {formatearNumero(totales.mermaDespezonado.desecho)} kg
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-md font-medium text-blue-800 mb-2">
-                Merma Lavado: {formatearNumero(totales.totalMermaLavado)} kg (
-                {formatearNumero(porcentajes.mermaLavado)}%)
-              </h4>
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                <div className="bg-blue-50 p-2 rounded">
-                  <p className="text-sm font-medium">Jugo</p>
-                  <p className="text-lg">
+                </motion.div>
+                <motion.div 
+                  className="bg-white p-3 rounded-lg shadow"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className="text-sm font-medium text-amber-800">Jugo Lavado</p>
+                  <p className="text-lg font-bold text-amber-700">
                     {formatearNumero(totales.mermaLavado.jugo)} kg
                   </p>
-                </div>
-                <div className="bg-blue-50 p-2 rounded">
-                  <p className="text-sm font-medium">Hongo</p>
-                  <p className="text-lg">
-                    {formatearNumero(totales.mermaLavado.hongo)} kg
+                </motion.div>
+                <motion.div 
+                  className="bg-white p-3 rounded-lg shadow"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className="text-sm font-medium text-amber-800">Fruta Mal Desp.</p>
+                  <p className="text-lg font-bold text-amber-700">
+                    {formatearNumero(totales.mermaLavado.frutaMalDespezonada)} kg
                   </p>
+                </motion.div>
+                <motion.div 
+                  className="bg-white p-3 rounded-lg shadow"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <p className="text-sm font-medium text-amber-800">No Lavado</p>
+                  <p className="text-lg font-bold text-amber-700">
+                    {formatearNumero(totales.totalKilosNoLavados)} kg
+                  </p>
+                </motion.div>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-amber-200">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-md font-medium text-amber-800">Total Jugo:</p>
+                  <p className="text-xl font-bold text-amber-700">
+                    {formatearNumero(totalKilosJugo)} kg
+                  </p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-amber-700">Porcentaje del total:</p>
+                  <p className="text-lg font-bold text-amber-700">
+                    {formatearNumero(porcentajes.jugoTotal)}%
+                  </p>
+                </div>
+                <div className="w-full bg-amber-200 rounded-full h-2.5 mt-2">
+                  <div
+                    className="bg-amber-500 h-2.5 rounded-full"
+                    style={{ width: `${Math.min(porcentajes.jugoTotal, 100)}%` }}
+                  ></div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-blue-50 p-2 rounded">
-                  <p className="text-sm font-medium">Fruta Mal Despezonada</p>
-                  <p className="text-lg">
-                    {formatearNumero(totales.mermaLavado.frutaMalDespezonada)}{" "}
-                    kg
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-2 rounded">
-                  <p className="text-sm font-medium">Desecho</p>
-                  <p className="text-lg">
-                    {formatearNumero(totales.mermaLavado.desecho)} kg
-                  </p>
-                </div>
-              </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-gray-50 p-3 rounded">
-              <p className="text-sm font-medium text-gray-700">
+            {/* Sección de Mermas */}
+            <motion.div 
+              className="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <h4 className="text-md font-medium text-red-800 mb-3 border-b border-red-200 pb-2">
+                Detalle de Mermas
+              </h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium text-red-800 mb-2">
+                    Merma Despezonado: {formatearNumero(totales.mermaDespezonado.hoja + totales.mermaDespezonado.desecho)} kg ({formatearNumero(porcentajes.mermaDespezonado)}%)
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <motion.div 
+                      className="bg-white p-3 rounded-lg shadow"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-sm font-medium text-red-800">Hoja</p>
+                      <p className="text-lg font-bold text-red-700">
+                        {formatearNumero(totales.mermaDespezonado.hoja)} kg
+                      </p>
+                    </motion.div>
+                    <motion.div 
+                      className="bg-white p-3 rounded-lg shadow"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-sm font-medium text-red-800">Desecho</p>
+                      <p className="text-lg font-bold text-red-700">
+                        {formatearNumero(totales.mermaDespezonado.desecho)} kg
+                      </p>
+                    </motion.div>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-blue-800 mb-2">
+                    Merma Lavado: {formatearNumero(totales.mermaLavado.hongo + totales.mermaLavado.desecho)} kg ({formatearNumero(porcentajes.mermaLavado)}%)
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <motion.div 
+                      className="bg-white p-3 rounded-lg shadow"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-sm font-medium text-blue-800">Hongo</p>
+                      <p className="text-lg font-bold text-blue-700">
+                        {formatearNumero(totales.mermaLavado.hongo)} kg
+                      </p>
+                    </motion.div>
+                    <motion.div 
+                      className="bg-white p-3 rounded-lg shadow"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="text-sm font-medium text-blue-800">Desecho</p>
+                      <p className="text-lg font-bold text-blue-700">
+                        {formatearNumero(totales.mermaLavado.desecho)} kg
+                      </p>
+                    </motion.div>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-red-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-md font-medium text-red-800">Total Merma:</p>
+                    <p className="text-xl font-bold text-red-700">
+                      {formatearNumero(totalKilosMerma)} kg
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm text-red-700">Porcentaje del total:</p>
+                    <p className="text-lg font-bold text-red-700">
+                      {formatearNumero(porcentajes.mermaTotal)}%
+                    </p>
+                  </div>
+                  <div className="w-full bg-red-200 rounded-full h-2.5 mt-2">
+                    <div
+                      className="bg-red-600 h-2.5 rounded-full"
+                      style={{ width: `${Math.min(porcentajes.mermaTotal, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Rendimiento Final */}
+            <motion.div 
+              className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-4 rounded-lg shadow-md"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              style={{ gridColumn: "span 2" }}
+            >
+              <p className="text-md font-medium text-emerald-800 border-b border-emerald-200 pb-2 mb-2">
                 Rendimiento Final
               </p>
-              <p className="text-xl font-bold text-green-600">
-                {formatearNumero(porcentajes.rendimientoTotal)}%
-              </p>
-              <p className="text-sm text-gray-500">
-                De {formatearNumero(datosCompletos.kilosRecepcionadosNetos)} kg
-                netos a {formatearNumero(totales.totalKilosLavados)} kg lavados
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                <span className="font-medium">Nota:</span> Se descontaron{" "}
-                {formatearNumero(datosCompletos.kilosNoLavados)} kg no
-                procesados en lavado.
-              </p>
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-emerald-700 mb-1">Sin incluir jugo:</p>
+                  <p className="text-2xl font-bold text-emerald-700">
+                    {formatearNumero(porcentajes.rendimientoTotal)}%
+                  </p>
+                  <p className="text-xs text-emerald-600">
+                    Relación entre kilos lavados y kilos recepcionados
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-emerald-700 mb-1">Incluyendo jugo:</p>
+                  <p className="text-2xl font-bold text-emerald-700">
+                    {formatearNumero(porcentajes.rendimientoConJugo)}%
+                  </p>
+                  <p className="text-xs text-emerald-600">
+                    Rendimiento total considerando productos derivados
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Tabla de recepciones */}
       {recepcionesFiltradas.length > 0 && (
-        <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-          <h3 className="text-lg font-medium p-4 bg-gray-50">
+        <div 
+          className="mt-8 bg-white rounded-lg shadow-lg overflow-hidden opacity-100 transform translate-y-0 transition-all duration-500"
+        >
+          <h3 className="text-lg font-medium p-4 bg-gradient-to-r from-gray-50 to-gray-100">
             Listado de Recepciones
           </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th
                     scope="col"
@@ -966,17 +1148,27 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {recepcionesFiltradas.map((recepcion) => {
+                {recepcionesFiltradas.map((recepcion, index) => {
                   const recepcionNeta =
                     recepcion.kilosRecepcionados -
                     (recepcion.kilosNoLavados || 0);
-                  const rendimientoTotal =
-                    recepcionNeta > 0
-                      ? (recepcion.kilosLavados / recepcionNeta) * 100
+                  
+                  // Calcular el rendimiento incluyendo jugo
+                  const rendimientoConJugo =
+                    recepcion.kilosRecepcionados > 0
+                      ? ((recepcion.kilosLavados + 
+                         (recepcion.mermaDespezonado?.jugo || 0) + 
+                         (recepcion.mermaLavado?.jugo || 0) + 
+                         (recepcion.mermaLavado?.frutaMalDespezonada || 0) +
+                         (recepcion.kilosNoLavados || 0)) / 
+                         recepcion.kilosRecepcionados) * 100
                       : 0;
 
                   return (
-                    <tr key={recepcion.numero}>
+                    <tr 
+                      key={recepcion.numero}
+                      className="hover:bg-gray-50 transition-colors duration-150"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {recepcion.numero}
@@ -990,13 +1182,6 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
                           {formatearNumero(recepcion.kilosRecepcionados)} kg
-                          {(recepcion.kilosNoLavados || 0) > 0 && (
-                            <div className="text-xs text-gray-500">
-                              No Lavado:{" "}
-                              {formatearNumero(recepcion.kilosNoLavados || 0)}{" "}
-                              kg
-                            </div>
-                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -1011,7 +1196,7 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {formatearNumero(rendimientoTotal)}%
+                          {formatearNumero(rendimientoConJugo)}%
                         </div>
                       </td>
                     </tr>

@@ -52,7 +52,7 @@ const Dashboard = () => {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              Recepciones
+              Despezonado
             </button>
             <button
               onClick={() => setSeccionActiva("embalaje")}
@@ -62,7 +62,7 @@ const Dashboard = () => {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              Embalaje
+              Embasado
             </button>
             <button
               onClick={() => setSeccionActiva("productos")}

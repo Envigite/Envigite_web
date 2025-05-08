@@ -54,8 +54,8 @@ const DetalleEmbalaje = ({ datosEmbalaje }: DetalleEmbalajeProps) => {
   const [showIQFData] = useState(true);
 
   // Definir constantes para los cálculos correctos
-  const PESO_TOTAL_REAL = 386050.22; // Suma total correcta
-  const TOTAL_KILOS_LAVADOS = 399381; // Total de kilos lavados
+  const PESO_TOTAL_REAL = 386093.66; // Suma total correcta actualizada
+  const TOTAL_KILOS_LAVADOS = 390823.26; // Total de kilos lavados actualizado al valor correcto
   const TOTAL_IQF =
     (datosEmbalaje.paletsIQF || 0) +
     (datosEmbalaje.totalesCongelados?.paletsIQFPendientes || 0);

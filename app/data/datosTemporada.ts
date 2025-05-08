@@ -11,9 +11,9 @@ export const datosCierre = {
     {
       numero: 1,
       productor: "L. Carrasco",
-      kilosRecepcionados: 12138.35,
+      kilosRecepcionados: 1993.8,
       kilosDespezonados: 0,
-      kilosLavados: 10373.85,
+      kilosLavados: 1814.85,
       kilosNoLavados: 0,
       mermaDespezonado: {
         hoja: 0,
@@ -24,7 +24,7 @@ export const datosCierre = {
         jugo: 0,
         hongo: 0,
         frutaMalDespezonada: 0,
-        desecho: 1781
+        desecho: 196
       }
     },
     {
@@ -87,10 +87,10 @@ export const datosCierre = {
     {
       numero: 5,
       productor: "C. Giofer Spa",
-      kilosRecepcionados: 49469.50,
+      kilosRecepcionados: 43267.5,
       kilosDespezonados: 0,
       kilosLavados: 32333.32,
-      kilosNoLavados: 15113,
+      kilosNoLavados: 8911,
       mermaDespezonado: {
         hoja: 0,
         jugo: 0,
@@ -107,15 +107,15 @@ export const datosCierre = {
       numero: 6,
       productor: "Agricola Frut JH SPA",
       kilosRecepcionados: 435736.20,
-      kilosDespezonados: 326733.11,
+      kilosDespezonados: 350711.11,
       calculoParaDespezonado: 406714.9,
       calculoParaLavado: 300321.37,
       kilosLavados: 323159.94,
       kilosNoLavados: 1669,
       mermaDespezonado: {
-        hoja: 50587.34,
-        jugo: 28675.50,
-        desecho: 200
+        hoja: 54273.34,
+        jugo: 29879.3,
+        desecho: 354
       },
       mermaLavado: {
         jugo: 20577.4,

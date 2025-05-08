@@ -48,7 +48,7 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
   // Calcular mermas reales (excluyendo jugo y fruta mal despezonada)
   const mermaRealDespezonado = mermas.despezonado.hoja + mermas.despezonado.desecho;
   const mermaRealLavado = mermas.lavado.hongo + mermas.lavado.desecho;
-  const totalDesecho = 61680.04; // Valor actualizado según lo solicitado
+  const totalDesecho = 63935.04; // Actualizado al valor correcto
   
   // Calcular productos derivados (jugo, fruta mal despezonada y no lavado)
   const totalJugoDespezonado = mermas.despezonado.jugo;
@@ -69,7 +69,7 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
   const totalPalets = paletsTotes + paletsCajas;
 
   // Rendimiento actualizado
-  const rendimientoActualizado = 87.56;
+  const rendimientoActualizado = 87.71;
   
   // Calcular la merma no medible (pérdida entre rendimiento y desecho)
   const totalRecepcionado = 542277; // Total recepcionado
@@ -165,8 +165,8 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
         >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-red-100 uppercase">Recepciones</p>
-              <h3 className="text-3xl font-bold mt-1">{formatearNumero(542277)} kg</h3>
+              <p className="text-xs font-medium text-red-100 uppercase">Kilos Recepcionados</p>
+              <h3 className="text-3xl font-bold mt-1">{formatearNumero(totales.totalKilosRecepcionados)} kg</h3>
               <p className="text-sm text-red-100 mt-1">75 recepciones en total</p>
             </div>
             <Warehouse className="h-10 w-10 text-red-100 opacity-80" />
@@ -182,9 +182,9 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
         >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium text-blue-100 uppercase">Rendimiento Despezonado</p>
+              <p className="text-xs font-medium text-blue-100 uppercase">Rendimiento Total</p>
               <h3 className="text-3xl font-bold mt-1">{rendimientoActualizado}%</h3>
-              <p className="text-sm text-blue-100 mt-1">Eficiencia del proceso</p>
+              <p className="text-sm text-blue-100 mt-1">Incluyendo jugo</p>
             </div>
             <TrendingUp className="h-10 w-10 text-blue-100 opacity-80" />
           </div>
@@ -200,7 +200,7 @@ const ResumenGeneral = ({ totales, porcentajes }: ResumenGeneralProps) => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-medium text-purple-100 uppercase">Rendimiento Embasado</p>
-              <h3 className="text-3xl font-bold mt-1">{formatearNumero(pesoTotalProducto/totales.totalKilosLavados*100)}%</h3>
+              <h3 className="text-3xl font-bold mt-1">98.79%</h3>
               <p className="text-sm text-purple-100 mt-1">Eficiencia de embasado</p>
             </div>
             <Package className="h-10 w-10 text-purple-100 opacity-80" />

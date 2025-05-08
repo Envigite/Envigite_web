@@ -13,6 +13,7 @@ import { Bar } from "react-chartjs-2";
 import FechasRecepcion from "./FechasRecepcion";
 import ResumenMensual from "./ResumenMensual";
 import { motion } from "framer-motion";
+import { datosCierre } from "../data/datosTemporada";
 // import { datosCierre } from "../data/datosTemporada";
 
 // Definición de tipos locales
@@ -68,42 +69,96 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
   // Comentamos esta variable ya que no se utiliza
   // const [mostrarNotaLavado, setMostrarNotaLavado] = useState<boolean>(false);
 
-  // Datos de todas las recepciones (75 en total)
-  const datosCompletos = {
-    total: 75,
-    porProductor: [
-      { productor: "P. Farías", recepciones: 8 },
-      { productor: "L. Carrasco", recepciones: 3 },
-      { productor: "J. Carrasco", recepciones: 1 },
-      { productor: "F. Carrasco", recepciones: 1 },
-      { productor: "C. Giofer Spa", recepciones: 7 },
-      { productor: "Agricola Frut JH SPA", recepciones: 52 },
-    ],
-    kilosRealesRecepcionados: 542277,
-    kilosNoLavados: 22561.1,
-    kilosRecepcionadosNetos: 519716.05, // Total descontando lo no lavado
-    kilosRecepcionadosConDespezonado: 412207,
-    kilosLavadoConDespezonado: {
-      kilosDespezonados: 331272,
-      kilosLavados: 304437,
-    },
-    kilosLavadoSinDespezonado: {
-      kilosRecepcionados: 109178,
-      kilosNoLavados: 20892,
-      kilosRecepcionadosNetos: 88286,
-      kilosLavados: 94946,
-    },
-  };
+  // Calcular los totales a partir de los datos de recepciones
+  const datosCompletos = useMemo(() => {
+    // Calcular el total de kilos recepcionados
+    const kilosRealesRecepcionados = recepciones.reduce(
+      (total, r) => total + r.kilosRecepcionados,
+      0
+    );
+    
+    // Calcular kilos no lavados
+    const kilosNoLavados = recepciones.reduce(
+      (total, r) => total + (r.kilosNoLavados || 0),
+      0
+    );
+    
+    // Calcular kilos netos
+    const kilosRecepcionadosNetos = kilosRealesRecepcionados - kilosNoLavados;
+    
+    // Calcular kilos con despezonado
+    const recepcionesConDespezonado = recepciones.filter(r => r.kilosDespezonados > 0);
+    const kilosRecepcionadosConDespezonado = recepcionesConDespezonado.reduce(
+      (total, r) => total + r.kilosRecepcionados,
+      0
+    );
+    
+    // Calcular totales de lavado con despezonado
+    const kilosDespezonados = recepcionesConDespezonado.reduce(
+      (total, r) => total + r.kilosDespezonados,
+      0
+    );
+    const kilosLavadosConDespezonado = recepcionesConDespezonado.reduce(
+      (total, r) => total + r.kilosLavados,
+      0
+    );
+    
+    // Calcular totales de lavado sin despezonado
+    const recepcionesSinDespezonado = recepciones.filter(r => r.kilosDespezonados === 0);
+    const kilosRecepcionadosSinDespezonado = recepcionesSinDespezonado.reduce(
+      (total, r) => total + r.kilosRecepcionados,
+      0
+    );
+    const kilosNoLavadosSinDespezonado = recepcionesSinDespezonado.reduce(
+      (total, r) => total + (r.kilosNoLavados || 0),
+      0
+    );
+    const kilosRecepcionadosNetosSinDespezonado = kilosRecepcionadosSinDespezonado - kilosNoLavadosSinDespezonado;
+    const kilosLavadosSinDespezonado = recepcionesSinDespezonado.reduce(
+      (total, r) => total + r.kilosLavados,
+      0
+    );
+    
+    // Agrupar recepciones por productor
+    const porProductor = Object.entries(datosCierre.datosProductores).map(
+      ([productor, datos]) => ({
+        productor,
+        recepciones: datos.recepciones,
+      })
+    );
+    
+    return {
+      total: Object.values(datosCierre.datosProductores).reduce(
+        (sum, data) => sum + data.recepciones, 
+        0
+      ),
+      porProductor,
+      kilosRealesRecepcionados,
+      kilosNoLavados,
+      kilosRecepcionadosNetos,
+      kilosRecepcionadosConDespezonado,
+      kilosLavadoConDespezonado: {
+        kilosDespezonados,
+        kilosLavados: kilosLavadosConDespezonado,
+      },
+      kilosLavadoSinDespezonado: {
+        kilosRecepcionados: kilosRecepcionadosSinDespezonado,
+        kilosNoLavados: kilosNoLavadosSinDespezonado,
+        kilosRecepcionadosNetos: kilosRecepcionadosNetosSinDespezonado,
+        kilosLavados: kilosLavadosSinDespezonado,
+      },
+    };
+  }, [recepciones]);
 
   // Mapa de recepciones por productor
-  const recepcionesPorProductor = {
-    "L. Carrasco": 3,
-    "P. Farías": 8,
-    "F. Carrasco": 1,
-    "J. Carrasco": 1,
-    "C. Giofer Spa": 7,
-    "Agricola Frut JH SPA": 52,
-  };
+  const recepcionesPorProductor = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(datosCierre.datosProductores).map(([key, value]) => [
+        key,
+        value.recepciones,
+      ])
+    );
+  }, []);
 
   // Obtener lista de productores únicos
   const productores = useMemo(() => {
@@ -274,220 +329,7 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
       ],
     };
   }, [recepcionesFiltradas]);
-
-  // Comentamos las variables que no se utilizan pero conservamos su utilidad
-  /*
-  // Datos para el gráfico de barras de mermas
-  const datosGraficoMermas = useMemo(() => {
-    const categorias = [
-      "Merma Despezonado - Hoja",
-      "Merma Despezonado - Jugo",
-      "Merma Despezonado - Desecho",
-      "Merma Lavado - Jugo",
-      "Merma Lavado - Hongo",
-      "Merma Lavado - Fruta Mal Desp.",
-      "Merma Lavado - Desecho",
-    ];
-
-    const datos = [
-      totales.mermaDespezonado.hoja,
-      totales.mermaDespezonado.jugo,
-      totales.mermaDespezonado.desecho,
-      totales.mermaLavado.jugo,
-      totales.mermaLavado.hongo,
-      totales.mermaLavado.frutaMalDespezonada,
-      totales.mermaLavado.desecho,
-    ];
-
-    return {
-      labels: categorias,
-      datasets: [
-        {
-          label: "Kilos",
-          data: datos,
-          backgroundColor: [
-            "rgba(75, 192, 192, 0.6)", // Verde teal
-            "rgba(75, 192, 192, 0.8)", // Verde teal más oscuro
-            "rgba(75, 192, 192, 0.4)", // Verde teal más claro
-            "rgba(54, 162, 235, 0.6)", // Azul
-            "rgba(54, 162, 235, 0.8)", // Azul más oscuro
-            "rgba(54, 162, 235, 0.4)", // Azul más claro
-            "rgba(255, 99, 132, 0.6)", // Rojo
-          ],
-          borderColor: [
-            "rgba(75, 192, 192, 1)", // Verde teal
-            "rgba(75, 192, 192, 1)", // Verde teal
-            "rgba(75, 192, 192, 1)", // Verde teal
-            "rgba(54, 162, 235, 1)", // Azul
-            "rgba(54, 162, 235, 1)", // Azul
-            "rgba(54, 162, 235, 1)", // Azul
-            "rgba(255, 99, 132, 1)", // Rojo
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
-  }, [totales]);
-
-  // Datos para el gráfico de líneas de rendimiento (recepcionado vs lavado)
-  const datosGraficoRendimiento = useMemo(() => {
-    // Calcular resumen por número de recepción
-    const numerosRecepcion = Array.from(
-      new Set(recepcionesFiltradas.map((r) => r.numero))
-    ).sort((a, b) => a - b);
-
-    const datosRecepcionados = [];
-    const datosLavados = [];
-
-    for (const numero of numerosRecepcion) {
-      const recepcionesFiltro = recepcionesFiltradas.filter(
-        (r) => r.numero === numero
-      );
-
-      const totalRecepcionado = recepcionesFiltro.reduce(
-        (sum, r) => sum + r.kilosRecepcionados,
-        0
-      );
-
-      const totalLavado = recepcionesFiltro.reduce(
-        (sum, r) => sum + r.kilosLavados,
-        0
-      );
-
-      datosRecepcionados.push(totalRecepcionado);
-      datosLavados.push(totalLavado);
-    }
-
-    return {
-      labels: numerosRecepcion.map((n) => `Recepción ${n}`),
-      datasets: [
-        {
-          label: "Kilos Recepcionados",
-          data: datosRecepcionados,
-          backgroundColor: "rgba(75, 192, 192, 0.6)", // Verde teal
-          borderColor: "rgba(75, 192, 192, 1)",
-          tension: 0.2,
-        },
-        {
-          label: "Kilos Lavados",
-          data: datosLavados,
-          backgroundColor: "rgba(54, 162, 235, 0.6)", // Azul
-          borderColor: "rgba(54, 162, 235, 1)",
-          tension: 0.2,
-        },
-      ],
-    };
-  }, [recepcionesFiltradas]);
-
-  // Datos para el gráfico de barras apiladas del proceso
-  const datosGraficoProceso = useMemo(() => {
-    const datosKilosDespezonados = recepcionesFiltradas.filter(
-      (r) => r.kilosDespezonados > 0
-    );
-    const datosKilosSinDespezonar = recepcionesFiltradas.filter(
-      (r) => r.kilosDespezonados === 0
-    );
-
-    // Kilos que pasaron por despezonado
-    const totalDespezonado = datosKilosDespezonados.reduce(
-      (sum, r) => sum + r.kilosDespezonados,
-      0
-    );
-    const totalLavadoConDespezonado = datosKilosDespezonados.reduce(
-      (sum, r) => sum + r.kilosLavados,
-      0
-    );
-    const mermaDespezonadoHoja = datosKilosDespezonados.reduce(
-      (sum, r) => sum + r.mermaDespezonado.hoja,
-      0
-    );
-    const mermaDespezonadoJugo = datosKilosDespezonados.reduce(
-      (sum, r) => sum + r.mermaDespezonado.jugo,
-      0
-    );
-    const mermaDespezonadoDesecho = datosKilosDespezonados.reduce(
-      (sum, r) => sum + r.mermaDespezonado.desecho,
-      0
-    );
-    const mermaLavadoConDespezonado =
-      totalDespezonado -
-      totalLavadoConDespezonado -
-      mermaDespezonadoHoja -
-      mermaDespezonadoJugo -
-      mermaDespezonadoDesecho;
-
-    // Kilos sin despezonar
-    const totalRecepcionadoSinDespezonar = datosKilosSinDespezonar.reduce(
-      (sum, r) => sum + r.kilosRecepcionados,
-      0
-    );
-    const totalLavadoSinDespezonar = datosKilosSinDespezonar.reduce(
-      (sum, r) => sum + r.kilosLavados,
-      0
-    );
-    const totalNoLavado = datosKilosSinDespezonar.reduce(
-      (sum, r) => sum + (r.kilosNoLavados || 0),
-      0
-    );
-    const mermaLavadoSinDespezonado =
-      totalRecepcionadoSinDespezonar - totalLavadoSinDespezonar - totalNoLavado;
-
-    return {
-      labels: ["Con Despezonado", "Sin Despezonar"],
-      datasets: [
-        {
-          label: "Lavado",
-          data: [totalLavadoConDespezonado, totalLavadoSinDespezonar],
-          backgroundColor: "rgba(75, 192, 192, 0.8)", // Verde teal
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "Merma Despezonado - Hoja",
-          data: [mermaDespezonadoHoja, 0],
-          backgroundColor: "rgba(54, 162, 235, 0.8)", // Azul
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "Merma Despezonado - Jugo",
-          data: [mermaDespezonadoJugo, 0],
-          backgroundColor: "rgba(54, 162, 235, 0.6)", // Azul más claro
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "Merma Despezonado - Desecho",
-          data: [mermaDespezonadoDesecho, 0],
-          backgroundColor: "rgba(54, 162, 235, 0.4)", // Azul aún más claro
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "Merma Lavado",
-          data: [mermaLavadoConDespezonado, mermaLavadoSinDespezonado],
-          backgroundColor: "rgba(255, 99, 132, 0.8)", // Rojo
-          borderColor: "rgba(255, 99, 132, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "No Lavado",
-          data: [0, totalNoLavado],
-          backgroundColor: "rgba(255, 206, 86, 0.8)", // Amarillo
-          borderColor: "rgba(255, 206, 86, 1)",
-          borderWidth: 1,
-        },
-      ],
-    };
-  }, [recepcionesFiltradas]);
-  */
-
-  // Optimizamos estas variables para que se usen en renderizado condicional futuro
-  // const datosGraficoMermas = null;
-  // const datosGraficoRendimiento = null;
-  // const datosGraficoProceso = null;
-
-  // Calcular porcentajes
+  
   const porcentajes = {
     mermaDespezonado:
       totales.totalKilosDespezonados > 0
@@ -502,22 +344,26 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
         ? ((totales.mermaLavado.hongo + totales.mermaLavado.desecho) / totales.totalKilosDespezonados) * 100
         : 0,
     rendimientoDespezonado:
-      totales.totalKilosDespezonados > 0
-        ? (productorSeleccionado === "Agricola Frut JH SPA" && recepcionesFiltradas.length > 0 && recepcionesFiltradas[0].calculoParaDespezonado
-            ? ((totales.totalKilosDespezonados + totales.totalKilosNoLavados) / recepcionesFiltradas[0].calculoParaDespezonado) * 100
-            : productorSeleccionado === "P. Farías"
-              ? (4539.4 / 5492) * 100
-              : (totales.totalKilosDespezonados /
-                (productorSeleccionado === "todos"
-                  ? datosCompletos.kilosRecepcionadosConDespezonado
-                  : totales.totalKilosRecepcionados)) *
-                100)
-        : 0,
-    rendimientoLavado: 0, // Se calculará después
+      productorSeleccionado === "todos" 
+        ? (355250.51 / 441228.20) * 100 
+        : productorSeleccionado === "P. Farías"
+          ? (totales.totalKilosDespezonados / 5492) * 100
+          : (totales.totalKilosDespezonados / totales.totalKilosRecepcionados) * 100,
+    rendimientoLavado:
+      productorSeleccionado === "todos"
+        ? (327275.22 / totales.totalKilosDespezonados) * 100
+        : productorSeleccionado === "C. Giofer Spa" || 
+          productorSeleccionado === "J. Carrasco" || 
+          productorSeleccionado === "F. Carrasco" ||
+          productorSeleccionado === "P. Farías" ||
+          productorSeleccionado === "L. Carrasco"
+          ? (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100
+          : (totales.totalKilosDespezonados > 0
+            ? (totales.totalKilosLavados / totales.totalKilosDespezonados) * 100
+            : 0),
     rendimientoTotal:
       totales.totalKilosRecepcionados > 0
-        ? (totales.totalKilosLavados / totales.totalKilosRecepcionadosNetos) *
-          100
+        ? (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100
         : 0,
     // Porcentaje total de merma
     mermaTotal:
@@ -560,58 +406,6 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
     totales.mermaLavado.jugo + 
     totales.mermaLavado.frutaMalDespezonada +
     totales.totalKilosNoLavados;
-
-  // Calcular el rendimiento ponderado del lavado
-  if (productorSeleccionado === "todos") {
-    const totalKilosLavadosProcesados =
-      datosCompletos.kilosLavadoConDespezonado.kilosDespezonados +
-      datosCompletos.kilosLavadoSinDespezonado.kilosRecepcionados;
-
-    const totalKilosLavadosResultantes =
-      datosCompletos.kilosLavadoConDespezonado.kilosLavados +
-      datosCompletos.kilosLavadoSinDespezonado.kilosLavados;
-
-    // Rendimiento promedio ponderado con la fórmula correcta
-    porcentajes.rendimientoLavado =
-      totalKilosLavadosProcesados > 0
-        ? (totalKilosLavadosResultantes / totalKilosLavadosProcesados) * 100
-        : 0;
-  } else if (productorSeleccionado === "Agricola Frut JH SPA" && recepcionesFiltradas.length > 0 && recepcionesFiltradas[0].calculoParaLavado) {
-    // Para el productor JH, usamos la fórmula especial
-    porcentajes.rendimientoLavado = 
-      (recepcionesFiltradas[0].calculoParaLavado / totales.totalKilosDespezonados) * 100;
-  } else if (productorSeleccionado === "P. Farías") {
-    // Para P. Farías, usamos la fórmula específica
-    porcentajes.rendimientoLavado = (19094.05 / 22308.4) * 100;
-  } else if (productorSeleccionado === "C. Giofer Spa") {
-    // Para C. Giofer Spa, usar solo la relación entre lavados y recepcionados
-    porcentajes.rendimientoLavado = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
-    // También ajustamos el rendimiento total para este productor específico
-    porcentajes.rendimientoTotal = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
-    // El rendimiento con jugo debe incluir todos los derivados
-    porcentajes.rendimientoConJugo = ((totales.totalKilosLavados + 
-                                      totales.mermaDespezonado.jugo + 
-                                      totales.mermaLavado.jugo + 
-                                      totales.mermaLavado.frutaMalDespezonada +
-                                      totales.totalKilosNoLavados) / 
-                                      totales.totalKilosRecepcionados) * 100;
-  } else if (productorSeleccionado === "F. Carrasco") {
-    // Para F. Carrasco, usar solo la relación entre lavados y recepcionados
-    porcentajes.rendimientoLavado = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
-    // También ajustamos el rendimiento total para este productor específico
-    porcentajes.rendimientoTotal = (totales.totalKilosLavados / totales.totalKilosRecepcionados) * 100;
-    // El rendimiento con jugo debe incluir todos los derivados
-    porcentajes.rendimientoConJugo = ((totales.totalKilosLavados + 
-                                      totales.totalKilosNoLavados) / 
-                                      totales.totalKilosRecepcionados) * 100;
-  } else {
-    // Para otros productores, calculamos el rendimiento de lavado directo
-    porcentajes.rendimientoLavado =
-      totales.totalKilosRecepcionadosNetos > 0
-        ? (totales.totalKilosLavados / totales.totalKilosRecepcionadosNetos) *
-          100
-        : 0;
-  }
 
   return (
     <div>
@@ -663,6 +457,20 @@ const Recepciones = ({ recepciones }: RecepcionesProps) => {
           </svg>
         </button>
       </motion.h2>
+
+      {/* Nota aclaratoria sobre datos excluidos */}
+      <motion.div
+        className="mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg shadow-sm"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <h3 className="text-sm font-medium text-amber-800">Nota: Datos excluidos de los cálculos</h3>
+        <ul className="mt-2 text-sm text-amber-700 space-y-1">
+          <li>• Recepciones 1-4 de L. Carrasco (10.111 Kg) por deterioro total de la carga.</li>
+          <li>• Recepción R-23 del 19-02-2025 (6.202 Kg) por devolución al productor.</li>
+        </ul>
+      </motion.div>
 
       {/* Modal para mostrar fechas */}
       {mostrarFechas && (

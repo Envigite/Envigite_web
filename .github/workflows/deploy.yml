@@ -12,6 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
@@ -19,10 +24,13 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_SERVICE_ID=${{ secrets.NEXT_PUBLIC_SERVICE_ID }}" >> .env.local
           echo "NEXT_PUBLIC_TEMPLATE_ID=${{ secrets.NEXT_PUBLIC_TEMPLATE_ID }}" >> .env.local
-          echo "NEXT_PUBLIC_USER_ID=${{ secrets.NEXT_PUBLIC_USER_ID }}" >> .env.local  
+          echo "NEXT_PUBLIC_USER_ID=${{ secrets.NEXT_PUBLIC_USER_ID }}" >> .env.local
 
       - name: Build project
-        run: npm run build
+        run: |
+          npm run build
+          ls -la
+          ls -la out || echo "out directory not found"
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master

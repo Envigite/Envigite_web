@@ -18,7 +18,6 @@ const Portfolio = () => {
           aprender constantemente, lo que me permite crecer tanto personal como
           profesionalmente en el mundo del desarrollo.
         </Content>
-        {/* Integramos DirectoryStructure aquí */}
         <div className="mt-6">
           <DirectoryStructure />
         </div>

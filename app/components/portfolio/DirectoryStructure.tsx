@@ -149,6 +149,21 @@ const DirectoryStructure: React.FC = () => {
                 },
               ],
             },
+            {
+              name: "Resumen Anual",
+              image: "/images/annual-report.webp",
+              link: "/cierre",
+              children: [
+                {
+                  name: "description",
+                  children: [
+                    {
+                      name: "Visualización interactiva del balance anual de la empresa con estadísticas clave, gráficos dinámicos y análisis de rendimiento. Este dashboard presenta métricas de crecimiento, distribución de proyectos por sector, y tendencias comparativas con años anteriores. Desarrollado con Tailwind CSSy React, ofrece una experiencia visual intuitiva para entender el impacto y evolución de nuestras iniciativas durante el último año fiscal.",
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],

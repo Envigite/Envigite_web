@@ -1,9 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import "../globals.css";
+import { Copy, Check } from "lucide-react";
 
 export default function Home() {
+  const [copied, setCopied] = useState(false);
+  const serverIP = "minecraft*ZG791C470TdRs3QjX9Z1GwSEyuKD.fathooo.com";
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(serverIP);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500); // ← Corregido el setTimeout
+    } catch (err) {
+      console.error("Error copiando al portapapeles", err);
+    }
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center font-rajdhani overflow-x-hidden relative bg-[linear-gradient(135deg,_#0d1421_0%,_#1a2332_25%,_#2d4a22_50%,_#1a2332_75%,_#0d1421_100%)]">
       {/* Cubos flotantes */}
@@ -55,8 +69,33 @@ export default function Home() {
               <div className="info-label font-orbitron uppercase text-[1.1rem] text-[#22C55E] font-bold tracking-wider mb-2">
                 IP del Servidor
               </div>
-              <div className="info-value font-orbitron text-green-500 text-[1.4rem] font-bold text-shadow">
-                minecraft*ZG791C470TdRs3QjX9Z1GwSEyuKD.fathooo.com
+
+              {/* Contenedor del texto y el botón de copiar */}
+              <div className="flex items-center gap-2">
+                <code className="flex-1 font-mono text-green-400 text-lg break-all bg-slate-900 px-2 py-2 rounded">
+                  {serverIP}
+                </code>
+
+                <button
+                  onClick={handleCopy}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                    copied
+                      ? "bg-green-600 text-white"
+                      : "bg-green-700 hover:bg-green-600 text-white"
+                  }`}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3 h-3" />
+                      <span>¡Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Copiar</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -84,8 +123,8 @@ export default function Home() {
             </h2>
             <p>
               Para instalar los mods, primero descarga e instala{" "}
-              <strong>Fabric</strong> desde el botón arriba. Luego, descarga los
-              mods y colócalos en la carpeta{" "}
+              <strong>Fabric</strong> desde el botón arriba (version 1.21.5).
+              Luego, descarga los mods y colócalos en la carpeta{" "}
               <code className="bg-gray-800 px-1 rounded">mods</code> dentro de
               tu carpeta de Minecraft.
             </p>

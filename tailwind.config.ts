@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,7 +12,13 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        orbitron: ['Orbitron', 'monospace'],
+        rajdhani: ['Rajdhani', 'sans-serif'],
+      },
     },
   },
   plugins: [],
 } satisfies Config;
+
+export default config;

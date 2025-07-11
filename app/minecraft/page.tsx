@@ -6,7 +6,7 @@ import { Copy, Check } from "lucide-react";
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
-  const serverIP = "minecraft*ZG791C470TdRs3QjX9Z1GwSEyuKD.fathooo.com";
+  const serverIP = "_minecraft_ZG791C470TdRs3QjX9Z1GwSEyuKD.fathooo.com";
 
   const handleCopy = async () => {
     try {

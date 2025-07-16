@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import HeaderText from "./HeaderText";
-import { useCallback } from "react";
 
 const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
@@ -37,11 +36,11 @@ const Navbar = () => {
   const logo = e.currentTarget.querySelector("img");
   if (!logo) return;
 
-  logo.classList.add("animate-ping");
+  logo.classList.add("soft-ping");
+  window.scrollTo({ top: 0, behavior: "smooth" });
   
   setTimeout(() => {
-    logo.classList.remove("animate-ping");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    logo.classList.remove("soft-ping");
   }, 900);
 };
 

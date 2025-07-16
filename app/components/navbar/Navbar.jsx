@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import HeaderText from "./HeaderText";
+import { useCallback } from "react";
 
 const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
@@ -8,42 +9,42 @@ const Navbar = () => {
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsAffix(window.scrollY > 50);
+  const handleScroll = () => setIsAffix(window.scrollY > 50);
 
-    const handleClickOutside = (event) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
-      ) {
-        setIsActive(false);
-      }
-    };
+  const handleClickOutside = (event) => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target) &&
+      buttonRef.current &&
+      !buttonRef.current.contains(event.target)
+    ) {
+      setIsActive(false);
+    }
+  };
 
-    window.addEventListener("scroll", handleScroll);
-    document.addEventListener("mousedown", handleClickOutside);
+  window.addEventListener("scroll", handleScroll);
+  document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
 
   const handleLogoClick = (e) => {
-    e.preventDefault();
-    const logo = e.currentTarget.querySelector("img");
+  e.preventDefault();
+  const logo = e.currentTarget.querySelector("img");
+  if (!logo) return;
 
-    logo.classList.add("animate-ping");
-
-    setTimeout(() => {
-      logo.classList.remove("animate-ping");
+  logo.classList.add("animate-ping");
+  
+  setTimeout(() => {
+    logo.classList.remove("animate-ping");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, 900);
-
-    setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100);
 };
+
 
   return (
     //Barra de navegación
@@ -126,6 +127,7 @@ const Navbar = () => {
             {/* Botón de menú (hamburguesa o "X") */}
             <div
               className="navTrigger lg:hidden z-50"
+              aria-expanded={isActive}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsActive(!isActive);
@@ -174,7 +176,7 @@ const Navbar = () => {
           <img
             src="/images/perfil.webp"
             alt="Profile"
-            className="block lg:hidden absolute top-1/2 -translate-y-1/2 w-36 h-36 md:w-48 md:h-48 rounded-full border-2 border-white"
+            className="block lg:hidden absolute top-1/2 md:top-1/3 -translate-y-1/2 w-36 h-36 md:w-48 md:h-48 rounded-full border-2 border-white transition-opacity duration-500 opacity-0 animate-fade-in"
             style={{ right: "7%" }} // Ajusta este valor según sea necesario
           />
         </section>
